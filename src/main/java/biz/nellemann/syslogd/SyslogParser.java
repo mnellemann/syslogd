@@ -1,3 +1,18 @@
+/*
+   Copyright 2020 mark.nellemann@gmail.com
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package biz.nellemann.syslogd;
 
 import org.slf4j.Logger;
@@ -6,14 +21,13 @@ import org.slf4j.LoggerFactory;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /*
     https://tools.ietf.org/html/rfc5424
+    https://tools.ietf.org/html/rfc3164
  */
 
 
@@ -22,7 +36,6 @@ public class SyslogParser {
     private final static Logger log = LoggerFactory.getLogger(SyslogParser.class);
 
 
-    // example:     <19>Sep 22 16:22:25 xps13 mark: adfdfdf34344545
     public static SyslogMessage parseRfc3164(String input) throws NumberFormatException {
 
         Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3} \\d{2} \\d{2}:\\d{2}:\\d{2})\\s+(\\S+)\\s+(\\S+): (.*)", Pattern.CASE_INSENSITIVE);
@@ -116,7 +129,6 @@ public class SyslogParser {
     }
 
 
-    // The rfc3164 date
     static protected Instant parseRfc3164Timestamp(String dateString) {
 
         // We need to add year to parse date correctly
@@ -138,7 +150,6 @@ public class SyslogParser {
     }
 
 
-    // The rfc5424 timestamp
     static protected Instant parseRfc5424Timestamp(String dateString) {
 
         Instant instant = null;
