@@ -1,0 +1,88 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'application'
+    id "com.github.johnrengelman.shadow" version "6.0.0"
+    id "net.nemerosa.versioning" version "2.14.0"
+    id "nebula.ospackage" version "8.4.1"
+}
+
+repositories {
+    // Use jcenter for resolving dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+}
+
+dependencies {
+    compile 'info.picocli:picocli:4.5.1'
+    annotationProcessor 'info.picocli:picocli-codegen:4.5.1'
+
+    implementation 'org.slf4j:slf4j-api:1.7.+'
+    runtimeOnly 'ch.qos.logback:logback-classic:1.+'
+
+    // Use the awesome Spock testing and specification framework
+    testImplementation('org.spockframework:spock-core:2.0-M3-groovy-3.0')
+    testImplementation("org.slf4j:slf4j-simple:1.7.+")
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'biz.nellemann.syslogd.SyslogServer'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+apply plugin: 'nebula.ospackage'
+ospackage {
+    packageName = 'syslogd'
+    release = '1'
+    user = 'root'
+    packager = "Mark Nellemann <mark.nellemann@gmail.com>"
+
+    into '/opt/syslogd'
+
+    from(shadowJar.outputs.files) {
+        into 'lib'
+    }
+
+    from('build/scriptsShadow') {
+        into 'bin'
+    }
+
+    from(['README.md', 'LICENSE']) {
+        into 'doc'
+    }
+
+}
+
+buildRpm {
+    dependsOn startShadowScripts
+    requires('java-1.8.0-openjdk-headless')
+    os = LINUX
+}
+
+buildDeb {
+    dependsOn startShadowScripts
+    requires('default-jre-headless')
+}
+
+processResources.dependsOn.add("versionFile")
+versionFile {
+    // Path to the file to be written
+    file = new File(project.buildDir, 'resources/main/version.properties')
+}
+
+jar {
+    manifest {
+        attributes(
+                'Built-By'       : System.properties['user.name'],
+                'Build-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ").toString(),
+                'Build-Revision' : versioning.info.commit,
+                'Created-By'     : "Gradle ${gradle.gradleVersion}",
+                'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+                'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+        )
+    }
+}
