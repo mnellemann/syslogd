@@ -16,7 +16,7 @@ class SyslogParserTest extends Specification {
         Instant inst = SyslogParser.parseRfc3164Timestamp(dateString)
 
         then:
-        inst.toString() == "${dt.getYear()}-09-12T22:50:13Z"
+        inst.toString() == "${dt.getYear()}-09-12T20:50:13Z"
     }
 
     void "test parseRfc5424Timestamp"() {

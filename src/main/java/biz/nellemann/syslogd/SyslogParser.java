@@ -42,7 +42,7 @@ public class SyslogParser {
         Matcher matcher = pattern.matcher(input);
         boolean matchFound = matcher.find();
         if(!matchFound) {
-            log.warn("Match not found");
+            log.warn("parseRfc3164() - Match not found in: " + input);
             return null;
         }
 
@@ -81,7 +81,7 @@ public class SyslogParser {
         Matcher matcher = pattern.matcher(input);
         boolean matchFound = matcher.find();
         if(!matchFound) {
-            log.warn("Match not found");
+            log.warn("parseRfc5424() - Match not found in: " + input);
             return null;
         }
 
@@ -132,7 +132,7 @@ public class SyslogParser {
     static protected Instant parseRfc3164Timestamp(String dateString) {
 
         // We need to add year to parse date correctly
-        LocalDateTime dt = LocalDateTime.now();
+        OffsetDateTime odt = OffsetDateTime.now();
 
         // Date: Mmm dd hh:mm:ss
         Instant instant = null;
@@ -140,8 +140,7 @@ public class SyslogParser {
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy MMM dd HH:mm:ss")
                 .withLocale(Locale.getDefault())
                 .withZone(ZoneId.systemDefault());
-            LocalDateTime dateTime = LocalDateTime.parse(dt.getYear() + " " + dateString, dateTimeFormatter);
-            instant = dateTime.toInstant(ZoneOffset.UTC);
+            instant = Instant.from(dateTimeFormatter.parse(odt.getYear() + " " + dateString));
         } catch(DateTimeParseException e) {
             log.error("parseDate()", e);
         }
