@@ -10,7 +10,7 @@ class SyslogParserTest extends Specification {
 
         setup:
         OffsetDateTime odt = OffsetDateTime.now()
-        String dateString = "Sep 12 22:50:13"
+        String dateString = "Sep 12 20:50:13"
 
         when:
         Instant inst = SyslogParser.parseRfc3164Timestamp(dateString)

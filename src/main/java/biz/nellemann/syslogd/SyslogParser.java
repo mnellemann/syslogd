@@ -137,9 +137,7 @@ public class SyslogParser {
         // Date: Mmm dd hh:mm:ss
         Instant instant = null;
         try {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy MMM dd HH:mm:ss")
-                .withLocale(Locale.getDefault())
-                .withZone(ZoneId.systemDefault());
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy MMM dd HH:mm:ss").withZone(ZoneOffset.UTC);
             instant = Instant.from(dateTimeFormatter.parse(odt.getYear() + " " + dateString));
         } catch(DateTimeParseException e) {
             log.error("parseDate()", e);
