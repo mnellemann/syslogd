@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +37,7 @@ public class SyslogParser {
 
     public static SyslogMessage parseRfc3164(String input) throws NumberFormatException {
 
-        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3} \\d{2} \\d{2}:\\d{2}:\\d{2})\\s+(\\S+)\\s+(\\S+): (.*)", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3} \\d{2} \\d{2}:\\d{2}:\\d{2})\\s+(?:Message forwarded from )?([^\\s:]+):?\\s+(\\S+): (.*)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(input);
         boolean matchFound = matcher.find();
         if(!matchFound) {
@@ -58,14 +57,14 @@ public class SyslogParser {
         log.debug("APP: " + application);
         log.debug("MSG: " + message);
 
-        Integer facility = Integer.parseInt(pri.substring(0, pri.length()-1));
-        Integer severity = Integer.parseInt(pri.substring(pri.length()-1));
+        Integer facility = getFacility(pri);
+        Integer severity = getSeverity(pri);
         log.debug("facility: " + facility);
         log.debug("severity: " + severity);
 
         SyslogMessage syslogMessage = new SyslogMessage();
-        syslogMessage.facility = facility;
-        syslogMessage.severity = severity;
+        syslogMessage.facility = Facility.getByNumber(facility);
+        syslogMessage.severity = Severity.getByNumber(severity);
         syslogMessage.timestamp = parseRfc3164Timestamp(date);
         syslogMessage.hostname = hostname;
         syslogMessage.application = application;
@@ -105,14 +104,14 @@ public class SyslogParser {
         log.debug("DATA: " + data);
         log.debug("MSG: " + msg);
 
-        Integer facility = Integer.parseInt(pri.substring(0, pri.length()-1));
-        Integer severity = Integer.parseInt(pri.substring(pri.length()-1));
+        Integer facility = getFacility(pri);
+        Integer severity = getSeverity(pri);
         log.debug("facility: " + facility);
         log.debug("severity: " + severity);
 
         SyslogMessage syslogMessage = new SyslogMessage();
-        syslogMessage.facility = facility;
-        syslogMessage.severity = severity;
+        syslogMessage.facility = Facility.getByNumber(facility);
+        syslogMessage.severity = Severity.getByNumber(severity);
         syslogMessage.version = Integer.parseInt(ver);
         syslogMessage.timestamp = parseRfc5424Timestamp(date);
         syslogMessage.hostname = host;
@@ -158,6 +157,30 @@ public class SyslogParser {
         }
 
         return instant;
+    }
+
+    /*
+    The priority value is calculated using the formula (Priority = Facility * 8 + Level).
+    For example, a kernel message (Facility=0) with a Severity of Emergency (Severity=0) would have a Priority value of 0.
+    Also, a "local use 4" message (Facility=20) with a Severity of Notice (Severity=5) would have a Priority value of 165.
+     */
+
+    static protected int getFacility(String prio) {
+
+        int priority = Integer.parseInt(prio);
+        int facility = priority >> 3;
+
+        log.debug("getFacility() - " + prio + " => " + facility);
+        return facility;
+    }
+
+    static protected int getSeverity(String prio) {
+
+        int priority = Integer.parseInt(prio);
+        int severity = priority & 0x07;
+
+        log.debug("getSeverity() - " + prio + " => " + severity);
+        return severity;
     }
 
 }
