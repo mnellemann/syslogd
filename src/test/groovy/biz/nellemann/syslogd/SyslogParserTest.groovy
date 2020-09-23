@@ -18,7 +18,6 @@ class SyslogParserTest extends Specification {
         msg.message == "adfdfdf3432434565656"
     }
 
-
     void "test rfc3164 aix/vios message"() {
 
         setup:

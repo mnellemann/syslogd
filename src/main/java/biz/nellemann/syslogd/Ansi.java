@@ -1,8 +1,9 @@
 package biz.nellemann.syslogd;
 
-public enum Color {
+public enum Ansi {
     //Color end string, color reset
     RESET("\033[0m"),
+    CLEAR_LINE("\033[0K"),
 
     // Regular Colors. Normal color, no bold, background color etc.
     BLACK("\033[0;30m"),    // BLACK
@@ -76,7 +77,7 @@ public enum Color {
 
     private final String code;
 
-    Color(String code) {
+    Ansi(String code) {
         this.code = code;
     }
 

@@ -52,20 +52,20 @@ public class SyslogMessage {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Color.WHITE); sb.append(timestamp.toString() + " "); sb.append(Color.RESET);
+        sb.append(timestamp.toString() + " ");
 
         if(severity.toNumber() < 3 ) {
-            sb.append(Color.RED);
+            sb.append(Ansi.RED);
         } else if(severity.toNumber() < 5) {
-            sb.append(Color.YELLOW);
+            sb.append(Ansi.YELLOW);
         } else {
-            sb.append(Color.GREEN);
+            sb.append(Ansi.GREEN);
         }
-        sb.append("[" + facility + "." + severity + "]"); sb.append(Color.RESET);
+        sb.append("[" + facility + "." + severity + "]"); sb.append(Ansi.RESET);
 
-        sb.append(Color.BLUE); sb.append("\t" + hostname); sb.append(Color.RESET);
-        sb.append(Color.CYAN); sb.append("\t" + application); sb.append(Color.RESET);
-        sb.append("\t" + message);
+        sb.append(Ansi.BLUE); sb.append("\t" + hostname); sb.append(Ansi.RESET);
+        sb.append(Ansi.CYAN); sb.append("\t" + application); sb.append(Ansi.RESET);
+        sb.append("\t" + message); sb.append(Ansi.CLEAR_LINE);
 
         return sb.toString();
     }
