@@ -2,21 +2,21 @@ package biz.nellemann.syslogd
 
 import spock.lang.Specification
 import java.time.Instant
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 class SyslogParserTest extends Specification {
 
     void "test parseRfc3164Timestamp"() {
 
         setup:
-        LocalDateTime dt = LocalDateTime.now()
+        OffsetDateTime odt = OffsetDateTime.now()
         String dateString = "Sep 12 22:50:13"
 
         when:
         Instant inst = SyslogParser.parseRfc3164Timestamp(dateString)
 
         then:
-        inst.toString() == "${dt.getYear()}-09-12T20:50:13Z"
+        inst.toString() == "${odt.getYear()}-09-12T20:50:13Z"
     }
 
     void "test parseRfc5424Timestamp"() {
