@@ -36,6 +36,7 @@ class SyslogParserTest extends Specification {
 
         setup:
         def input = "<13>Sep 23 08:53:28 xps13 mark: adfdfdf3432434"
+        //def input = "<13>Sep  3 08:53:28 xps13 mark: adfdfdf3432434"
 
         when:
         SyslogMessage msg = SyslogParser.parseRfc3164(input)
@@ -44,6 +45,18 @@ class SyslogParserTest extends Specification {
         msg.message == "adfdfdf3432434"
         msg.hostname == "xps13"
         msg.application == "mark"
+    }
+
+    void "test rsyslogd sudo message"() {
+        setup:
+        String input = "<85>Oct  5 17:13:41 xps13 sudo:     mark : TTY=pts/1 ; PWD=/etc/rsyslog.d ; USER=root ; COMMAND=/usr/sbin/service rsyslog restart"
+
+        when:
+        SyslogMessage msg = SyslogParser.parseRfc3164(input)
+
+        then:
+        msg.application == "sudo"
+        msg.message == "mark : TTY=pts/1 ; PWD=/etc/rsyslog.d ; USER=root ; COMMAND=/usr/sbin/service rsyslog restart"
     }
 
     void "test parseRfc3164Timestamp"() {
@@ -73,3 +86,4 @@ class SyslogParserTest extends Specification {
     }
 
 }
+

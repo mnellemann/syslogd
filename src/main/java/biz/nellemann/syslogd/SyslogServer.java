@@ -41,10 +41,10 @@ public class SyslogServer implements Callable<Integer>, LogListener {
     @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: true]")
     boolean tcpServer = true;
 
-    @CommandLine.Option(names = "--rfc3164", negatable = false, description = "Parse RFC3164 messages [default: RFC5424]")
-    boolean rfc3164 = false;
+    @CommandLine.Option(names = "--rfc5424", negatable = false, description = "Parse RFC5424 messages [default: RFC3164]")
+    boolean rfc5424 = false;
 
-    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "ANSI in output [default: true]")
+    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output ANSI colors [default: true]")
     boolean ansiOutput = true;
 
     @CommandLine.Option(names = {"-f", "--file"}, description = "Write output to file [default: STDOUT]")
@@ -96,10 +96,10 @@ public class SyslogServer implements Callable<Integer>, LogListener {
         String message = event.getMessage();
         SyslogMessage msg = null;
         try {
-            if(rfc3164) {
-                msg = SyslogParser.parseRfc3164(message);
-            } else {
+            if(rfc5424) {
                 msg = SyslogParser.parseRfc5424(message);
+            } else {
+                msg = SyslogParser.parseRfc3164(message);
             }
         } catch(Exception e) {
             log.error("Problem parsing message: ", e);

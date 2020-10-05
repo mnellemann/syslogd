@@ -37,7 +37,7 @@ public class SyslogParser {
 
     public static SyslogMessage parseRfc3164(final String input) throws NumberFormatException {
 
-        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3} \\d{2} \\d{2}:\\d{2}:\\d{2})\\s+(?:Message forwarded from )?([^\\s:]+):?\\s+(\\S+): (.*)", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3}\\s+\\d{1,2} \\d{2}:\\d{2}:\\d{2})\\s+(?:Message forwarded from )?([^\\s:]+):?\\s+(\\S+): (.*)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(input);
         boolean matchFound = matcher.find();
         if(!matchFound) {
@@ -62,7 +62,7 @@ public class SyslogParser {
         log.debug("facility: " + facility);
         log.debug("severity: " + severity);
 
-        SyslogMessage syslogMessage = new SyslogMessage(message);
+        SyslogMessage syslogMessage = new SyslogMessage(message.trim());
         syslogMessage.facility = Facility.getByNumber(facility);
         syslogMessage.severity = Severity.getByNumber(severity);
         syslogMessage.timestamp = parseRfc3164Timestamp(date);
@@ -108,7 +108,7 @@ public class SyslogParser {
         log.debug("facility: " + facility);
         log.debug("severity: " + severity);
 
-        SyslogMessage syslogMessage = new SyslogMessage(msg);
+        SyslogMessage syslogMessage = new SyslogMessage(msg.trim());
         syslogMessage.facility = Facility.getByNumber(facility);
         syslogMessage.severity = Severity.getByNumber(severity);
         syslogMessage.version = Integer.parseInt(ver);
@@ -134,7 +134,7 @@ public class SyslogParser {
         // Date: Mmm dd hh:mm:ss
         Instant instant = null;
         try {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy MMM dd HH:mm:ss").withZone(ZoneOffset.UTC);
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy MMM [ ]d HH:mm:ss").withZone(ZoneOffset.UTC);
             instant = Instant.from(dateTimeFormatter.parse(odt.getYear() + " " + dateString));
         } catch(DateTimeParseException e) {
             log.error("parseDate()", e);

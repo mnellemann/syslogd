@@ -12,7 +12,7 @@ class VersionProvider implements CommandLine.IVersionProvider {
 
         URL url = getClass().getResource("/version.properties");
         if (url == null) {
-            return new String[] { "No version.txt file found in the classpath." };
+            return new String[] { "No version information available." };
         }
         Properties properties = new Properties();
         properties.load(url.openStream());
