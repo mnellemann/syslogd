@@ -38,13 +38,13 @@ public class UdpServer extends Thread {
 
     public void run() {
 
-        byte[] buf = new byte[10000];
+        byte[] buf = new byte[4096];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
         while (listen) {
             try {
                 socket.receive(packet);
-                String packetData = new String(packet.getData(), "UTF8");
+                String packetData = new String(packet.getData(), packet.getOffset(), packet.getLength(), "UTF8");
                 sendEvent(packetData);
             } catch (Exception e) {
                 e.printStackTrace();

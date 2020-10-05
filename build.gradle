@@ -59,7 +59,7 @@ ospackage {
 
 buildRpm {
     dependsOn startShadowScripts
-    requires('java-1.8.0-openjdk-headless')
+    //requires('java-1.8.0-openjdk-headless')
     os = LINUX
 }
 

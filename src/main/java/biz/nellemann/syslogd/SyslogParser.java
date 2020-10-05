@@ -35,7 +35,7 @@ public class SyslogParser {
     private final static Logger log = LoggerFactory.getLogger(SyslogParser.class);
 
 
-    public static SyslogMessage parseRfc3164(String input) throws NumberFormatException {
+    public static SyslogMessage parseRfc3164(final String input) throws NumberFormatException {
 
         Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3} \\d{2} \\d{2}:\\d{2}:\\d{2})\\s+(?:Message forwarded from )?([^\\s:]+):?\\s+(\\S+): (.*)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(input);
@@ -45,11 +45,11 @@ public class SyslogParser {
             return null;
         }
 
-        String pri = matcher.group(1);
-        String date = matcher.group(2);
-        String hostname = matcher.group(3);
-        String application = matcher.group(4);
-        String message = matcher.group(5);
+        final String pri = matcher.group(1);
+        final String date = matcher.group(2);
+        final String hostname = matcher.group(3);
+        final String application = matcher.group(4);
+        final String message = matcher.group(5);
 
         log.debug("PRI: " + pri);
         log.debug("DATE: " + date);
@@ -62,19 +62,18 @@ public class SyslogParser {
         log.debug("facility: " + facility);
         log.debug("severity: " + severity);
 
-        SyslogMessage syslogMessage = new SyslogMessage();
+        SyslogMessage syslogMessage = new SyslogMessage(message);
         syslogMessage.facility = Facility.getByNumber(facility);
         syslogMessage.severity = Severity.getByNumber(severity);
         syslogMessage.timestamp = parseRfc3164Timestamp(date);
         syslogMessage.hostname = hostname;
         syslogMessage.application = application;
-        syslogMessage.message = message;
 
         return syslogMessage;
     }
 
 
-    public static SyslogMessage parseRfc5424(String input) throws NumberFormatException {
+    public static SyslogMessage parseRfc5424(final String input) throws NumberFormatException {
 
         Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\d+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\[.*\\])\\s+(\\S+)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(input);
@@ -84,15 +83,15 @@ public class SyslogParser {
             return null;
         }
 
-        String pri = matcher.group(1);
-        String ver = matcher.group(2);
-        String date = matcher.group(3);
-        String host = matcher.group(4);
-        String app = matcher.group(5);
-        String procId = matcher.group(6);
-        String msgId = matcher.group(7);
-        String data = matcher.group(8);
-        String msg = matcher.group(9);
+        final String pri = matcher.group(1);
+        final String ver = matcher.group(2);
+        final String date = matcher.group(3);
+        final String host = matcher.group(4);
+        final String app = matcher.group(5);
+        final String procId = matcher.group(6);
+        final String msgId = matcher.group(7);
+        final String data = matcher.group(8);
+        final String msg = matcher.group(9);
 
         log.debug("PRI: " + pri);
         log.debug("VER: " + ver);
@@ -109,7 +108,7 @@ public class SyslogParser {
         log.debug("facility: " + facility);
         log.debug("severity: " + severity);
 
-        SyslogMessage syslogMessage = new SyslogMessage();
+        SyslogMessage syslogMessage = new SyslogMessage(msg);
         syslogMessage.facility = Facility.getByNumber(facility);
         syslogMessage.severity = Severity.getByNumber(severity);
         syslogMessage.version = Integer.parseInt(ver);
@@ -122,7 +121,6 @@ public class SyslogParser {
         if(msgId != null && !msgId.equals("-"))
             syslogMessage.messageId = msgId;
         syslogMessage.structuredData = data;
-        syslogMessage.message = msg;
 
         return syslogMessage;
     }

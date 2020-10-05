@@ -44,12 +44,26 @@ public class SyslogMessage {
     String structuredData;
 
     // The MSG part contains a free-form message that provides information about the event.
-    String message;
+    final private String message;
+
+    SyslogMessage(final String message) {
+        this.message = message;
+    }
+
 
 
     public String toString() {
-        //return String.format("%s %s %s: %s", timestamp.toString(), hostname, application, message);
+        StringBuilder sb = new StringBuilder();
+        sb.append(timestamp.toString() + " ");
+        sb.append("[" + facility + "." + severity + "]");
+        sb.append("\t" + hostname);
+        sb.append("\t" + application);
+        sb.append("\t" + message);
+        return sb.toString();
+    }
 
+
+    public String toAnsiString() {
         StringBuilder sb = new StringBuilder();
 
         sb.append(timestamp.toString() + " ");
@@ -65,7 +79,7 @@ public class SyslogMessage {
 
         sb.append(Ansi.BLUE); sb.append("\t" + hostname); sb.append(Ansi.RESET);
         sb.append(Ansi.CYAN); sb.append("\t" + application); sb.append(Ansi.RESET);
-        sb.append("\t" + message); sb.append(Ansi.CLEAR_LINE);
+        sb.append("\t" + message);
 
         return sb.toString();
     }

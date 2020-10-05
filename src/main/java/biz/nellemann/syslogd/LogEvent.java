@@ -20,9 +20,9 @@ import java.util.EventObject;
 
 public class LogEvent extends EventObject {
 
-    private String message;
+    private final String message;
 
-    public LogEvent(Object source, String message ) {
+    public LogEvent(final Object source, final String message ) {
         super( source );
         this.message = message;
     }

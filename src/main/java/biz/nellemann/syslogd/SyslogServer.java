@@ -19,25 +19,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+
+import java.io.*;
 import java.util.concurrent.Callable;
 
-@Command(name = "syslogd", mixinStandardHelpOptions = true, version = "syslogd 1.0",
-        description = "Simple syslog server that prints messages to stdout.")
+@Command(name = "syslogd",
+        mixinStandardHelpOptions = true,
+        description = "Basic syslog server.",
+        versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class SyslogServer implements Callable<Integer>, LogListener {
 
     private final static Logger log = LoggerFactory.getLogger(SyslogServer.class);
+    private BufferedWriter bw;
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port, 514 (privileged) by default.")
+    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514]")
     private int port = 514;
 
-    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP, true by default.")
+    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true]")
     boolean udpServer = true;
 
-    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP, true by default.")
+    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: true]")
     boolean tcpServer = true;
 
-    @CommandLine.Option(names = "--rfc3164", negatable = false, description = "Parse RFC3164 syslog message, RFC5424 by default.")
+    @CommandLine.Option(names = "--rfc3164", negatable = false, description = "Parse RFC3164 messages [default: RFC5424]")
     boolean rfc3164 = false;
+
+    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "ANSI in output [default: true]")
+    boolean ansiOutput = true;
+
+    @CommandLine.Option(names = {"-f", "--file"}, description = "Write output to file [default: STDOUT]")
+    File outputFile;
 
     public static void main(String... args) {
         int exitCode = new CommandLine(new SyslogServer()).execute(args);
@@ -47,6 +58,15 @@ public class SyslogServer implements Callable<Integer>, LogListener {
 
     @Override
     public Integer call() throws Exception {
+
+        FileOutputStream fos = null;
+        OutputStreamWriter w;
+
+        if(outputFile != null) {
+            fos = new FileOutputStream(outputFile);
+            w = new OutputStreamWriter(fos, "UTF-8");
+            bw = new BufferedWriter(w);
+        }
 
         if(udpServer) {
             UdpServer udpServer = new UdpServer(port);
@@ -60,6 +80,11 @@ public class SyslogServer implements Callable<Integer>, LogListener {
             tcpServer.start();
         }
 
+        if(outputFile != null) {
+            bw.close();
+            fos.close();
+        }
+
         return 0;
     }
 
@@ -67,6 +92,7 @@ public class SyslogServer implements Callable<Integer>, LogListener {
     @Override
     public void onLogEvent(LogEvent event) {
 
+        // Parse message
         String message = event.getMessage();
         SyslogMessage msg = null;
         try {
@@ -80,9 +106,37 @@ public class SyslogServer implements Callable<Integer>, LogListener {
         }
 
         if(msg != null) {
-            System.out.println(msg);
+            if(bw != null) {
+                writeToFile(msg);
+            } else {
+                writeToStdout(msg);
+            }
         }
 
+    }
+
+
+    void writeToFile(SyslogMessage msg) {
+        try {
+            if(ansiOutput) {
+                bw.append(msg.toAnsiString());
+            } else {
+                bw.append(msg.toString());
+            }
+            bw.newLine();
+            bw.flush();
+        } catch (IOException e) {
+            log.error("file error", e);
+        }
+    }
+
+
+    void writeToStdout(SyslogMessage msg) {
+        if(ansiOutput) {
+            System.out.println(msg.toAnsiString());
+        } else {
+            System.out.println(msg);
+        }
     }
 
 }
