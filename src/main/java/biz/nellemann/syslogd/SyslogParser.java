@@ -37,30 +37,29 @@ public class SyslogParser {
 
     public static SyslogMessage parseRfc3164(final String input) throws NumberFormatException {
 
-        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3}\\s+\\d{1,2} \\d{2}:\\d{2}:\\d{2})\\s+(?:Message forwarded from )?([^\\s:]+):?\\s+(\\S+): (.*)", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3}\\s+\\d{1,2} \\d{2}:\\d{2}:\\d{2})\\s+(Message forwarded from \\S+:|\\S+)\\s+(\\S+): (.*)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(input);
         boolean matchFound = matcher.find();
         if(!matchFound) {
-            log.warn("parseRfc3164() - Match not found in: " + input);
+            //log.warn("parseRfc3164() - Match not found in: ");
+            System.err.println("!" + input);
             return null;
         }
 
-        final String pri = matcher.group(1);
-        final String date = matcher.group(2);
-        final String hostname = matcher.group(3);
-        final String application = matcher.group(4);
-        final String message = matcher.group(5);
+        String pri = matcher.group(1);
+        String date = matcher.group(2);
+        String hostname = matcher.group(3);
+        String application = matcher.group(4);
+        String message = matcher.group(5);
 
-        log.debug("PRI: " + pri);
-        log.debug("DATE: " + date);
-        log.debug("HOST: " + hostname);
-        log.debug("APP: " + application);
-        log.debug("MSG: " + message);
+        if(hostname.endsWith(":")) {
+            String[] tmp = hostname.split(" ");
+            hostname = tmp[tmp.length-1];
+            hostname = hostname.substring(0, hostname.length()-1);
+        }
 
         Integer facility = getFacility(pri);
         Integer severity = getSeverity(pri);
-        log.debug("facility: " + facility);
-        log.debug("severity: " + severity);
 
         SyslogMessage syslogMessage = new SyslogMessage(message.trim());
         syslogMessage.facility = Facility.getByNumber(facility);
@@ -79,7 +78,8 @@ public class SyslogParser {
         Matcher matcher = pattern.matcher(input);
         boolean matchFound = matcher.find();
         if(!matchFound) {
-            log.warn("parseRfc5424() - Match not found in: " + input);
+            //log.warn("parseRfc5424() - Match not found in: " + input);
+            System.err.println("!" + input);
             return null;
         }
 
@@ -93,20 +93,8 @@ public class SyslogParser {
         final String data = matcher.group(8);
         final String msg = matcher.group(9);
 
-        log.debug("PRI: " + pri);
-        log.debug("VER: " + ver);
-        log.debug("DATE: " + date);
-        log.debug("HOST: " + host);
-        log.debug("APP: " + app);
-        log.debug("PROCID: " + procId);
-        log.debug("MSGID: " + msgId);
-        log.debug("DATA: " + data);
-        log.debug("MSG: " + msg);
-
         Integer facility = getFacility(pri);
         Integer severity = getSeverity(pri);
-        log.debug("facility: " + facility);
-        log.debug("severity: " + severity);
 
         SyslogMessage syslogMessage = new SyslogMessage(msg.trim());
         syslogMessage.facility = Facility.getByNumber(facility);

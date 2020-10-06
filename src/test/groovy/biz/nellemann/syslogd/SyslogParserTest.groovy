@@ -2,8 +2,6 @@ package biz.nellemann.syslogd
 
 import spock.lang.Specification
 import java.time.Instant
-import java.time.OffsetDateTime;
-
 class SyslogParserTest extends Specification {
 
     void "test rfc5424 message"() {
@@ -59,6 +57,20 @@ class SyslogParserTest extends Specification {
         msg.message == "mark : TTY=pts/1 ; PWD=/etc/rsyslog.d ; USER=root ; COMMAND=/usr/sbin/service rsyslog restart"
     }
 
+    /*
+    void "test gdm-session message"() {
+        setup:
+        String input = "<12>Oct  5 18:31:01 xps13 /usr/lib/gdm3/gdm-x-session[1921]: (EE) event5  - CUST0001:00 06CB:76AF Touchpad: kernel bug: Touch jump detected and discarded."
+
+        when:
+        SyslogMessage msg = SyslogParser.parseRfc3164(input)
+
+        then:
+        msg.application == "/usr/lib/gdm3/gdm-x-session[1921]"
+        msg.message == "(EE) event5  - CUST0001:00 06CB:76AF Touchpad: kernel bug: Touch jump detected and discarded."
+    }*/
+
+
     void "test parseRfc3164Timestamp"() {
 
         setup:
@@ -86,4 +98,6 @@ class SyslogParserTest extends Specification {
     }
 
 }
+
+import java.time.OffsetDateTime;
 
