@@ -37,7 +37,7 @@ public class SyslogParser {
 
     public static SyslogMessage parseRfc3164(final String input) throws NumberFormatException {
 
-        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3}\\s+\\d{1,2} \\d{2}:\\d{2}:\\d{2})\\s+(Message forwarded from \\S+:|\\S+)\\s+(\\S+): (.*)", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3}\\s+\\d{1,2} \\d{2}:\\d{2}:\\d{2})\\s+(Message forwarded from \\S+:|\\S+)\\s+([^\\s:]+):?\\s+(.*)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(input);
         boolean matchFound = matcher.find();
         if(!matchFound) {

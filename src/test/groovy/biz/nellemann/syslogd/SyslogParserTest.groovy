@@ -2,6 +2,8 @@ package biz.nellemann.syslogd
 
 import spock.lang.Specification
 import java.time.Instant
+import java.time.OffsetDateTime;
+
 class SyslogParserTest extends Specification {
 
     void "test rfc5424 message"() {
@@ -57,7 +59,6 @@ class SyslogParserTest extends Specification {
         msg.message == "mark : TTY=pts/1 ; PWD=/etc/rsyslog.d ; USER=root ; COMMAND=/usr/sbin/service rsyslog restart"
     }
 
-    /*
     void "test gdm-session message"() {
         setup:
         String input = "<12>Oct  5 18:31:01 xps13 /usr/lib/gdm3/gdm-x-session[1921]: (EE) event5  - CUST0001:00 06CB:76AF Touchpad: kernel bug: Touch jump detected and discarded."
@@ -68,8 +69,19 @@ class SyslogParserTest extends Specification {
         then:
         msg.application == "/usr/lib/gdm3/gdm-x-session[1921]"
         msg.message == "(EE) event5  - CUST0001:00 06CB:76AF Touchpad: kernel bug: Touch jump detected and discarded."
-    }*/
+    }
 
+    void "test intellij message"() {
+        setup:
+        String input = "<14>Oct  6 05:10:26 xps13 com.jetbrains.IntelliJ-IDEA-Ulti git4idea.commands.GitStandardProgressAnalyzer\$1.onLineAvailable(GitStandardProgressAnalyzer.java:45)"
+
+        when:
+        SyslogMessage msg = SyslogParser.parseRfc3164(input)
+
+        then:
+        msg.application == "com.jetbrains.IntelliJ-IDEA-Ulti"
+        msg.message == "git4idea.commands.GitStandardProgressAnalyzer\$1.onLineAvailable(GitStandardProgressAnalyzer.java:45)"
+    }
 
     void "test parseRfc3164Timestamp"() {
 
@@ -99,5 +111,4 @@ class SyslogParserTest extends Specification {
 
 }
 
-import java.time.OffsetDateTime;
 
