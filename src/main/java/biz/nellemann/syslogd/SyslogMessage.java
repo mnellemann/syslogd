@@ -55,9 +55,9 @@ public class SyslogMessage {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(timestamp.toString());
-        sb.append(String.format("  [%6.6s.%-6.6s] ", facility, severity));
-        sb.append(String.format(" %-24.24s ", hostname));
-        sb.append(String.format(" %-32.43s ", application));
+        sb.append(String.format("  [%8.8s.%-6.6s] ", facility, severity));
+        sb.append(String.format(" %-16.16s ", hostname));
+        sb.append(String.format(" %-32.32s  ", application));
         sb.append(message);
         return sb.toString();
     }
@@ -76,9 +76,9 @@ public class SyslogMessage {
             sb.append(Ansi.GREEN);
         }
 
-        sb.append(String.format("  [%6.6s.%-6.6s] ", facility, severity)).append(Ansi.RESET);
-        sb.append(Ansi.BLUE).append(String.format(" %-24.24s ", hostname)).append(Ansi.RESET);
-        sb.append(Ansi.CYAN).append(String.format(" %-32.32s ", application)).append(Ansi.RESET);
+        sb.append(String.format("  [%8.8s.%-6.6s] ", facility, severity)).append(Ansi.RESET);
+        sb.append(Ansi.BLUE).append(String.format(" %-16.16s ", hostname)).append(Ansi.RESET);
+        sb.append(Ansi.CYAN).append(String.format(" %-32.32s  ", application)).append(Ansi.RESET);
         sb.append(message);
 
         return sb.toString();
