@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 @Command(name = "syslogd",
@@ -30,25 +30,22 @@ import java.util.concurrent.Callable;
 public class SyslogServer implements Callable<Integer>, LogListener {
 
     private final static Logger log = LoggerFactory.getLogger(SyslogServer.class);
-    private BufferedWriter bw;
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514]")
+    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].")
     private int port = 514;
 
-    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true]")
+    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true].")
     boolean udpServer = true;
 
-    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: true]")
+    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: true].")
     boolean tcpServer = true;
 
-    @CommandLine.Option(names = "--rfc5424", negatable = false, description = "Parse RFC5424 messages [default: RFC3164]")
-    boolean rfc5424 = false;
-
-    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output ANSI colors [default: true]")
+    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output ANSI colors [default: true].")
     boolean ansiOutput = true;
 
-    @CommandLine.Option(names = {"-f", "--file"}, description = "Write output to file [default: STDOUT]")
-    File outputFile;
+    @CommandLine.Option(names = "--rfc5424", description = "Parse RFC-5424 messages [default: RFC-3164].")
+    boolean rfc5424 = false;
+
 
     public static void main(String... args) {
         int exitCode = new CommandLine(new SyslogServer()).execute(args);
@@ -57,16 +54,7 @@ public class SyslogServer implements Callable<Integer>, LogListener {
 
 
     @Override
-    public Integer call() throws Exception {
-
-        FileOutputStream fos = null;
-        OutputStreamWriter w;
-
-        if(outputFile != null) {
-            fos = new FileOutputStream(outputFile);
-            w = new OutputStreamWriter(fos, "UTF-8");
-            bw = new BufferedWriter(w);
-        }
+    public Integer call() throws IOException {
 
         if(udpServer) {
             UdpServer udpServer = new UdpServer(port);
@@ -78,11 +66,6 @@ public class SyslogServer implements Callable<Integer>, LogListener {
             TcpServer tcpServer = new TcpServer(port);
             tcpServer.addEventListener(this);
             tcpServer.start();
-        }
-
-        if(outputFile != null) {
-            bw.close();
-            fos.close();
         }
 
         return 0;
@@ -106,37 +89,13 @@ public class SyslogServer implements Callable<Integer>, LogListener {
         }
 
         if(msg != null) {
-            if(bw != null) {
-                writeToFile(msg);
-            } else {
-                writeToStdout(msg);
-            }
-        }
-
-    }
-
-
-    void writeToFile(SyslogMessage msg) {
-        try {
             if(ansiOutput) {
-                bw.append(msg.toAnsiString());
+                System.out.println(msg.toAnsiString());
             } else {
-                bw.append(msg.toString());
+                System.out.println(msg);
             }
-            bw.newLine();
-            bw.flush();
-        } catch (IOException e) {
-            log.error("file error", e);
         }
-    }
 
-
-    void writeToStdout(SyslogMessage msg) {
-        if(ansiOutput) {
-            System.out.println(msg.toAnsiString());
-        } else {
-            System.out.println(msg);
-        }
     }
 
 }
