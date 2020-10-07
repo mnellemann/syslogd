@@ -3,20 +3,17 @@ package biz.nellemann.syslogd;
 import picocli.CommandLine;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 class VersionProvider implements CommandLine.IVersionProvider {
 
     public String[] getVersion() throws IOException {
 
-        URL url = getClass().getResource("/version.properties");
-        if (url == null) {
-            return new String[] { "No version information available." };
-        }
-        Properties properties = new Properties();
-        properties.load(url.openStream());
-        return new String[] { "${COMMAND-FULL-NAME} " + properties.getProperty("VERSION_GRADLE") + "-" + properties.getProperty("VERSION_BUILD") };
+        Manifest manifest = new Manifest(getClass().getResourceAsStream("/META-INF/MANIFEST.MF"));
+        Attributes attrs = manifest.getMainAttributes();
+
+        return new String[] { "${COMMAND-FULL-NAME} " + attrs.getValue("Build-Version") };
     }
 
 }
