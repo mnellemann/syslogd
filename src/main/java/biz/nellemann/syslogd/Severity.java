@@ -41,7 +41,7 @@ public enum Severity {
     }
 
     private Integer severityNumber;
-    private Severity(int severityNumber) {
+    Severity(int severityNumber) {
         this.severityNumber = severityNumber;
     }
 

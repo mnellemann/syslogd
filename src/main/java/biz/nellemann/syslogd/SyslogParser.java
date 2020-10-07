@@ -24,17 +24,18 @@ import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/*
-    https://tools.ietf.org/html/rfc5424
-    https://tools.ietf.org/html/rfc3164
- */
-
-
 public class SyslogParser {
 
     private final static Logger log = LoggerFactory.getLogger(SyslogParser.class);
 
 
+    /**
+     * Parses [rfc3164](https://tools.ietf.org/html/rfc3164) syslog messages.
+     *
+     * @param input
+     * @return
+     * @throws NumberFormatException
+     */
     public static SyslogMessage parseRfc3164(final String input) throws NumberFormatException {
 
         Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3}\\s+\\d{1,2} \\d{2}:\\d{2}:\\d{2})\\s+(Message forwarded from \\S+:|\\S+)\\s+([^\\s:]+):?\\s+(.*)", Pattern.CASE_INSENSITIVE);
@@ -50,7 +51,7 @@ public class SyslogParser {
         String date = matcher.group(2);
         String hostname = matcher.group(3);
         String application = matcher.group(4);
-        String message = matcher.group(5);
+        String msg = matcher.group(5);
 
         if(hostname.endsWith(":")) {
             String[] tmp = hostname.split(" ");
@@ -61,7 +62,7 @@ public class SyslogParser {
         Integer facility = getFacility(pri);
         Integer severity = getSeverity(pri);
 
-        SyslogMessage syslogMessage = new SyslogMessage(message.trim());
+        SyslogMessage syslogMessage = new SyslogMessage(msg.trim());
         syslogMessage.facility = Facility.getByNumber(facility);
         syslogMessage.severity = Severity.getByNumber(severity);
         syslogMessage.timestamp = parseRfc3164Timestamp(date);
@@ -72,6 +73,13 @@ public class SyslogParser {
     }
 
 
+    /**
+     * Parses [rfc5424](https://tools.ietf.org/html/rfc5424) syslog messages.
+     *
+     * @param input
+     * @return
+     * @throws NumberFormatException
+     */
     public static SyslogMessage parseRfc5424(final String input) throws NumberFormatException {
 
         Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\d+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\[.*\\])\\s+(\\S+)", Pattern.CASE_INSENSITIVE);
@@ -83,15 +91,15 @@ public class SyslogParser {
             return null;
         }
 
-        final String pri = matcher.group(1);
-        final String ver = matcher.group(2);
-        final String date = matcher.group(3);
-        final String host = matcher.group(4);
-        final String app = matcher.group(5);
-        final String procId = matcher.group(6);
-        final String msgId = matcher.group(7);
-        final String data = matcher.group(8);
-        final String msg = matcher.group(9);
+        String pri = matcher.group(1);
+        String ver = matcher.group(2);
+        String date = matcher.group(3);
+        String host = matcher.group(4);
+        String app = matcher.group(5);
+        String procId = matcher.group(6);
+        String msgId = matcher.group(7);
+        String data = matcher.group(8);
+        String msg = matcher.group(9);
 
         Integer facility = getFacility(pri);
         Integer severity = getSeverity(pri);
@@ -114,6 +122,12 @@ public class SyslogParser {
     }
 
 
+    /**
+     * Parse rfc3164 TIMESTAMP field into Instant.
+     *
+     * @param dateString
+     * @return
+     */
     static protected Instant parseRfc3164Timestamp(String dateString) {
 
         // We need to add year to parse date correctly
@@ -132,6 +146,12 @@ public class SyslogParser {
     }
 
 
+    /**
+     * Parse rfc5424 TIMESTAMP field into Instant.
+     *
+     * @param dateString
+     * @return
+     */
     static protected Instant parseRfc5424Timestamp(String dateString) {
 
         Instant instant = null;
@@ -145,27 +165,35 @@ public class SyslogParser {
         return instant;
     }
 
-    /*
-    The priority value is calculated using the formula (Priority = Facility * 8 + Level).
-    For example, a kernel message (Facility=0) with a Severity of Emergency (Severity=0) would have a Priority value of 0.
-    Also, a "local use 4" message (Facility=20) with a Severity of Notice (Severity=5) would have a Priority value of 165.
+
+    /**
+     * Converts syslog PRI field into Facility.
+     *
+     * @param pri
+     * @return
      */
+    static protected int getFacility(String pri) {
 
-    static protected int getFacility(String prio) {
-
-        int priority = Integer.parseInt(prio);
+        int priority = Integer.parseInt(pri);
         int facility = priority >> 3;
 
-        log.debug("getFacility() - " + prio + " => " + facility);
+        log.debug("getFacility() - " + pri + " => " + facility);
         return facility;
     }
 
-    static protected int getSeverity(String prio) {
 
-        int priority = Integer.parseInt(prio);
+    /**
+     * Converts syslog PRI field into Severity.
+     *
+     * @param pri
+     * @return
+     */
+    static protected int getSeverity(String pri) {
+
+        int priority = Integer.parseInt(pri);
         int severity = priority & 0x07;
 
-        log.debug("getSeverity() - " + prio + " => " + severity);
+        log.debug("getSeverity() - " + pri + " => " + severity);
         return severity;
     }
 

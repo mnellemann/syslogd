@@ -19,32 +19,32 @@ import java.time.Instant;
 
 public class SyslogMessage {
 
-    Facility facility;
-    Severity severity;
+    protected Facility facility;
+    protected Severity severity;
 
     // The VERSION field denotes the version of the syslog protocol specification.
-    Integer version;
+    protected Integer version;
 
     // The TIMESTAMP field is a formalized timestamp derived from [RFC3339].
-    Instant timestamp;
+    protected Instant timestamp;
 
     // The HOSTNAME field identifies the machine that originally sent the syslog message.
-    String hostname;
+    protected String hostname;
 
     // The APP-NAME field SHOULD identify the device or application that originated the message.
-    String application;
+    protected String application;
 
     // The PROCID field is often used to provide the process name or process ID associated with a syslog system.
-    String processId;
+    protected String processId;
 
     // The MSGID SHOULD identify the type of message.
-    String messageId;
+    protected String messageId;
 
     // STRUCTURED-DATA provides a mechanism to express information in a well defined, easily parseable and interpretable data format.
-    String structuredData;
+    protected String structuredData;
 
     // The MSG part contains a free-form message that provides information about the event.
-    final private String message;
+    protected final String message;
 
     SyslogMessage(final String message) {
         this.message = message;
@@ -54,11 +54,11 @@ public class SyslogMessage {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(timestamp.toString() + " ");
-        sb.append("[" + facility + "." + severity + "]");
-        sb.append("\t" + hostname);
-        sb.append("\t" + application);
-        sb.append("\t" + message);
+        sb.append(timestamp.toString());
+        sb.append(String.format("  [%6.6s.%-6.6s] ", facility, severity));
+        sb.append(String.format(" %-24.24s ", hostname));
+        sb.append(String.format(" %-32.43s ", application));
+        sb.append(message);
         return sb.toString();
     }
 
@@ -66,7 +66,7 @@ public class SyslogMessage {
     public String toAnsiString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(timestamp.toString() + " ");
+        sb.append(timestamp.toString());
 
         if(severity.toNumber() < 3 ) {
             sb.append(Ansi.RED);
@@ -75,11 +75,11 @@ public class SyslogMessage {
         } else {
             sb.append(Ansi.GREEN);
         }
-        sb.append("[" + facility + "." + severity + "]"); sb.append(Ansi.RESET);
 
-        sb.append(Ansi.BLUE); sb.append("\t" + hostname); sb.append(Ansi.RESET);
-        sb.append(Ansi.CYAN); sb.append("\t" + application); sb.append(Ansi.RESET);
-        sb.append("\t" + message);
+        sb.append(String.format("  [%6.6s.%-6.6s] ", facility, severity)).append(Ansi.RESET);
+        sb.append(Ansi.BLUE).append(String.format(" %-24.24s ", hostname)).append(Ansi.RESET);
+        sb.append(Ansi.CYAN).append(String.format(" %-32.32s ", application)).append(Ansi.RESET);
+        sb.append(message);
 
         return sb.toString();
     }

@@ -15,8 +15,6 @@
  */
 package biz.nellemann.syslogd;
 
-import java.io.IOException;
-
 public interface LogListener {
     void onLogEvent(LogEvent event);
 }

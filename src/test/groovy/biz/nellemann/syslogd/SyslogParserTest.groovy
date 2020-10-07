@@ -36,7 +36,6 @@ class SyslogParserTest extends Specification {
 
         setup:
         def input = "<13>Sep 23 08:53:28 xps13 mark: adfdfdf3432434"
-        //def input = "<13>Sep  3 08:53:28 xps13 mark: adfdfdf3432434"
 
         when:
         SyslogMessage msg = SyslogParser.parseRfc3164(input)
