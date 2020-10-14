@@ -26,7 +26,7 @@ import java.util.List;
 
 public class TcpServer {
 
-    private int port;
+    private final int port;
     private ServerSocket serverSocket;
 
     TcpServer() {
@@ -52,7 +52,7 @@ public class TcpServer {
      * Event Listener Configuration
      */
 
-    protected List<LogListener> eventListeners = new ArrayList<>();
+    protected final List<LogListener> eventListeners = new ArrayList<>();
 
     public synchronized void addEventListener( LogListener l ) {
         eventListeners.add( l );
@@ -66,9 +66,9 @@ public class TcpServer {
 
     private static class ClientHandler extends Thread {
 
-        protected List<LogListener> eventListeners;
+        protected final List<LogListener> eventListeners;
 
-        private Socket clientSocket;
+        private final Socket clientSocket;
         private BufferedReader in;
 
         public ClientHandler(Socket socket, List<LogListener> eventListeners) {

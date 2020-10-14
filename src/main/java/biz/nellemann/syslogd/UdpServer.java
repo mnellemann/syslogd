@@ -18,13 +18,14 @@ package biz.nellemann.syslogd;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class UdpServer extends Thread {
 
-    protected DatagramSocket socket = null;
+    protected DatagramSocket socket;
     protected boolean listen = true;
 
     public UdpServer() throws IOException {
@@ -44,7 +45,7 @@ public class UdpServer extends Thread {
         while (listen) {
             try {
                 socket.receive(packet);
-                String packetData = new String(packet.getData(), packet.getOffset(), packet.getLength(), "UTF8");
+                String packetData = new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8);
                 sendEvent(packetData);
             } catch (Exception e) {
                 e.printStackTrace();

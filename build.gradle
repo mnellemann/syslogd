@@ -55,7 +55,7 @@ ospackage {
 
 buildRpm {
     dependsOn startShadowScripts
-    os = LINUX
+    os = "LINUX"
 }
 
 buildDeb {

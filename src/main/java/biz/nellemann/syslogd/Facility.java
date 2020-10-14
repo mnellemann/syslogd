@@ -72,7 +72,7 @@ public enum Facility {
         return this.facilityNumber;
     }
 
-    private Integer facilityNumber;
+    private final Integer facilityNumber;
     Facility(int facilityNumber) {
         this.facilityNumber = facilityNumber;
     }
