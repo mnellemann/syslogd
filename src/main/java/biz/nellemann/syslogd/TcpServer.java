@@ -100,9 +100,9 @@ public class TcpServer {
 
         private synchronized void sendEvent(String message) {
             LogEvent event = new LogEvent( this, message );
-            Iterator listeners = eventListeners.iterator();
+            Iterator<LogListener> listeners = eventListeners.iterator();
             while( listeners.hasNext() ) {
-                ( (LogListener) listeners.next() ).onLogEvent( event );
+                listeners.next().onLogEvent( event );
             }
         }
 
