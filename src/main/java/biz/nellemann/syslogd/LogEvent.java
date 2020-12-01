@@ -20,6 +20,7 @@ import java.util.EventObject;
 
 public class LogEvent extends EventObject {
 
+    private static final long serialVersionUID = 1L;
     private final String message;
 
     public LogEvent(final Object source, final String message ) {
@@ -30,4 +31,5 @@ public class LogEvent extends EventObject {
     public String getMessage() {
         return message;
     }
+
 }

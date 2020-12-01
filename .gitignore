@@ -1,6 +1,8 @@
-# Ignore Gradle project-specific cache directory
+.classpath
+.settings
+.project
 .gradle
+.vscode
 .idea
-
-# Ignore Gradle build output directory
 build
+bin
