@@ -20,7 +20,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class UdpServer extends Thread {
@@ -57,9 +56,8 @@ public class UdpServer extends Thread {
 
     private synchronized void sendEvent(String message) {
         LogEvent event = new LogEvent( this, message);
-        Iterator<LogListener> listeners = eventListeners.iterator();
-        while( listeners.hasNext() ) {
-            listeners.next().onLogEvent( event );
+        for (LogListener eventListener : eventListeners) {
+            eventListener.onLogEvent(event);
         }
     }
 

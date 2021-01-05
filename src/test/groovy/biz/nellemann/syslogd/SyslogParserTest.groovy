@@ -32,6 +32,20 @@ class SyslogParserTest extends Specification {
         msg.application == "padmin"
     }
 
+    void "test another rfc3164 aix/vios message"() {
+
+        setup:
+        def input = "<13>Dec 18 10:09:22 Message forwarded from p924vio1: root: [errnotify] seq: 24266 - AA8AB241 1218100920 T O OPERATOR OPERATOR NOTIFICATION"
+
+        when:
+        SyslogMessage msg = SyslogParser.parseRfc3164(input)
+
+        then:
+        msg.message == "[errnotify] seq: 24266 - AA8AB241 1218100920 T O OPERATOR OPERATOR NOTIFICATION"
+        msg.hostname == "p924vio1"
+        msg.application == "root"
+    }
+
     void "test rfc3164 normal message"() {
 
         setup:

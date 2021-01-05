@@ -27,9 +27,9 @@ import java.util.concurrent.Callable;
         mixinStandardHelpOptions = true,
         description = "Basic syslog server.",
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
-public class SyslogServer implements Callable<Integer>, LogListener {
+public class Application implements Callable<Integer>, LogListener {
 
-    private final static Logger log = LoggerFactory.getLogger(SyslogServer.class);
+    private final static Logger log = LoggerFactory.getLogger(Application.class);
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].")
     private int port = 514;
@@ -48,7 +48,7 @@ public class SyslogServer implements Callable<Integer>, LogListener {
 
 
     public static void main(String... args) {
-        int exitCode = new CommandLine(new SyslogServer()).execute(args);
+        int exitCode = new CommandLine(new Application()).execute(args);
         System.exit(exitCode);
     }
 
