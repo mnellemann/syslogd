@@ -2,11 +2,9 @@
 Description=Simple Syslog Service
 
 [Service]
-#User=nobody
-#Group=nogroup
 TimeoutStartSec=0
 Restart=always
-ExecStart=/opt/syslogd/bin/syslogd --forward --no-stdout
+ExecStart=/opt/syslogd/bin/syslogd --no-stdout --forward localhost:1514
 
 [Install]
 WantedBy=default.target
