@@ -25,36 +25,47 @@ import java.util.concurrent.Callable;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
-        description = "Basic syslog server.",
+        description = "Syslog Daemon.",
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Application implements Callable<Integer>, LogListener {
 
     private final static Logger log = LoggerFactory.getLogger(Application.class);
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].")
-    private int port = 514;
+    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].", defaultValue = "514")
+    private int port;
 
-    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true].")
-    boolean udpServer = true;
+    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true].", defaultValue = "true")
+    private boolean udpServer;
 
-    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: true].")
-    boolean tcpServer = true;
+    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: true].", defaultValue = "true")
+    private boolean tcpServer;
 
-    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output ANSI colors [default: true].")
-    boolean ansiOutput = true;
+    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output ANSI colors [default: true].", defaultValue = "true")
+    private boolean ansiOutput;
 
-    @CommandLine.Option(names = "--rfc5424", description = "Parse RFC-5424 messages [default: RFC-3164].")
-    boolean rfc5424 = false;
+    @CommandLine.Option(names = "--no-stdout", negatable = true, description = "Output messages to stdout [default: true].", defaultValue = "true")
+    private boolean stdout;
 
+    @CommandLine.Option(names = "--rfc5424", description = "Parse RFC-5424 messages [default: RFC-3164].", defaultValue = "false")
+    private boolean rfc5424;
 
-    public static void main(String... args) {
-        int exitCode = new CommandLine(new Application()).execute(args);
-        System.exit(exitCode);
-    }
+    @CommandLine.Option(names = { "-f", "--forward"}, description = "Forward messages (UDP RFC-3164) [default: false].", defaultValue = "false")
+    private boolean forward;
 
+    @CommandLine.Option(names = "--forward-host", description = "Forward to host [default: localhost].", paramLabel = "<hostname>", defaultValue = "localhost")
+    private String forwardHost;
+
+    @CommandLine.Option(names = "--forward-port", description = "Forward to port [default: 1514].", paramLabel = "<port>", defaultValue = "1514")
+    private int forwardPort;
+
+    private UdpClient udpClient;
 
     @Override
     public Integer call() throws IOException {
+
+        if(forward) {
+            udpClient = new UdpClient(forwardHost, forwardPort);
+        }
 
         if(udpServer) {
             UdpServer udpServer = new UdpServer(port);
@@ -85,17 +96,34 @@ public class Application implements Callable<Integer>, LogListener {
                 msg = SyslogParser.parseRfc3164(message);
             }
         } catch(Exception e) {
-            log.error("Problem parsing message: ", e);
+            log.error("onLogEvent() - Error parsing message: ", e);
         }
 
         if(msg != null) {
-            if(ansiOutput) {
-                System.out.println(msg.toAnsiString());
-            } else {
-                System.out.println(msg);
+
+            if(stdout) {
+                if(ansiOutput) {
+                    System.out.println(SyslogPrinter.toAnsiString(msg));
+                } else {
+                    System.out.println(SyslogPrinter.toString(msg));
+                }
+            }
+
+            if(forward) {
+                try {
+                    udpClient.send(SyslogPrinter.toRfc3164(msg));
+                } catch (Exception e) {
+                    log.error("onLogEvent()", e);
+                }
             }
         }
 
+    }
+
+
+    public static void main(String... args) {
+        int exitCode = new CommandLine(new Application()).execute(args);
+        System.exit(exitCode);
     }
 
 }

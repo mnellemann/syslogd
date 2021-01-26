@@ -197,4 +197,5 @@ public class SyslogParser {
         return severity;
     }
 
+
 }

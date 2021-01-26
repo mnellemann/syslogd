@@ -50,38 +50,4 @@ public class SyslogMessage {
         this.message = message;
     }
 
-
-
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(timestamp.toString());
-        sb.append(String.format("  [%8.8s.%-6.6s] ", facility, severity));
-        sb.append(String.format(" %-16.16s ", hostname));
-        sb.append(String.format(" %-32.32s  ", application));
-        sb.append(message);
-        return sb.toString();
-    }
-
-
-    public String toAnsiString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(timestamp.toString());
-
-        if(severity.toNumber() < 3 ) {
-            sb.append(Ansi.RED);
-        } else if(severity.toNumber() < 5) {
-            sb.append(Ansi.YELLOW);
-        } else {
-            sb.append(Ansi.GREEN);
-        }
-
-        sb.append(String.format("  [%8.8s.%-6.6s] ", facility, severity)).append(Ansi.RESET);
-        sb.append(Ansi.BLUE).append(String.format(" %-16.16s ", hostname)).append(Ansi.RESET);
-        sb.append(Ansi.CYAN).append(String.format(" %-32.32s  ", application)).append(Ansi.RESET);
-        sb.append(message);
-
-        return sb.toString();
-    }
-
 }
