@@ -1,0 +1,12 @@
+[Unit]
+Description=Simple Syslog Service
+
+[Service]
+#User=nobody
+#Group=nogroup
+TimeoutStartSec=0
+Restart=always
+ExecStart=/opt/syslogd/bin/syslogd --forward --no-stdout
+
+[Install]
+WantedBy=default.target

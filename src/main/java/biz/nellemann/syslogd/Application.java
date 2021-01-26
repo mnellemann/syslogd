@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
-        description = "Syslog Daemon.",
+        description = "Simple Syslog Server",
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Application implements Callable<Integer>, LogListener {
 
