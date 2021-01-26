@@ -15,13 +15,15 @@
  */
 package biz.nellemann.syslogd;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.impl.SimpleLogger;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
@@ -29,7 +31,9 @@ import java.util.concurrent.Callable;
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Application implements Callable<Integer>, LogListener {
 
-    private final static Logger log = LoggerFactory.getLogger(Application.class);
+    private boolean doForward = false;
+    private UdpClient udpClient;
+
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].", defaultValue = "514")
     private int port;
@@ -49,22 +53,38 @@ public class Application implements Callable<Integer>, LogListener {
     @CommandLine.Option(names = "--rfc5424", description = "Parse RFC-5424 messages [default: RFC-3164].", defaultValue = "false")
     private boolean rfc5424;
 
-    @CommandLine.Option(names = { "-f", "--forward"}, description = "Forward messages (UDP RFC-3164) [default: false].", defaultValue = "false")
-    private boolean forward;
+    @CommandLine.Option(names = { "-f", "--forward"}, description = "Forward to UDP host[:port] (RFC-3164).", paramLabel = "<host>")
+    private String forward;
 
-    @CommandLine.Option(names = "--forward-host", description = "Forward to host [default: localhost].", paramLabel = "<hostname>", defaultValue = "localhost")
-    private String forwardHost;
+    @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: 'false'].")
+    private boolean enableDebug = false;
 
-    @CommandLine.Option(names = "--forward-port", description = "Forward to port [default: 1514].", paramLabel = "<port>", defaultValue = "1514")
-    private int forwardPort;
-
-    private UdpClient udpClient;
 
     @Override
     public Integer call() throws IOException {
 
-        if(forward) {
-            udpClient = new UdpClient(forwardHost, forwardPort);
+        if(enableDebug) {
+            System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+        }
+
+        if(forward != null && !forward.isEmpty()) {
+            String fHost, fPort;
+            Pattern pattern = Pattern.compile("^([^:]+)(?::([0-9]+))?$", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(forward);
+            if(matcher.find()) {
+                fHost = matcher.group(1);
+                if(matcher.groupCount() == 2 && matcher.group(2) != null) {
+                    fPort = matcher.group(2);
+                } else {
+                    fPort = "514";
+                }
+            } else {
+                fHost = "localhost";
+                fPort = "514";
+            }
+
+            udpClient = new UdpClient(fHost, Integer.parseInt(fPort));
+            doForward = true;
         }
 
         if(udpServer) {
@@ -96,7 +116,7 @@ public class Application implements Callable<Integer>, LogListener {
                 msg = SyslogParser.parseRfc3164(message);
             }
         } catch(Exception e) {
-            log.error("onLogEvent() - Error parsing message: ", e);
+            e.printStackTrace();
         }
 
         if(msg != null) {
@@ -109,11 +129,11 @@ public class Application implements Callable<Integer>, LogListener {
                 }
             }
 
-            if(forward) {
+            if(doForward) {
                 try {
                     udpClient.send(SyslogPrinter.toRfc3164(msg));
                 } catch (Exception e) {
-                    log.error("onLogEvent()", e);
+                    e.printStackTrace();
                 }
             }
         }

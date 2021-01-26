@@ -1,0 +1,2 @@
+[SyslogServer] [DEBUG] SyslogParser - getFacility() - 68 => 8
+[SyslogServer] [DEBUG] SyslogParser - getSeverity() - 68 => 4

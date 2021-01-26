@@ -177,7 +177,7 @@ public class SyslogParser {
         int priority = Integer.parseInt(pri);
         int facility = priority >> 3;
 
-        log.debug("getFacility() - " + pri + " => " + facility);
+        //log.debug("getFacility() - " + pri + " => " + facility);
         return facility;
     }
 
@@ -193,7 +193,7 @@ public class SyslogParser {
         int priority = Integer.parseInt(pri);
         int severity = priority & 0x07;
 
-        log.debug("getSeverity() - " + pri + " => " + severity);
+        //log.debug("getSeverity() - " + pri + " => " + severity);
         return severity;
     }
 

@@ -18,7 +18,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:1.7.30'
 
     testImplementation('org.spockframework:spock-core:2.0-M4-groovy-3.0')
-    testImplementation("org.slf4j:slf4j-simple:1.7.+")
+    testImplementation("org.slf4j:slf4j-simple:1.7.30")
 }
 
 application {

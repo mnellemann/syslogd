@@ -1,8 +1,5 @@
 package biz.nellemann.syslogd;
 
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-
 public class SyslogPrinter {
 
     public static String toString(SyslogMessage msg) {
@@ -42,7 +39,7 @@ public class SyslogPrinter {
     public static String toRfc3164(SyslogMessage msg) {
         StringBuilder sb = new StringBuilder();
         sb.append(getPri(msg.facility, msg.severity));
-        sb.append(" " + new java.text.SimpleDateFormat("MMM dd HH:mm:ss").format(new java.util.Date(msg.timestamp.toEpochMilli())));
+        sb.append(new java.text.SimpleDateFormat("MMM dd HH:mm:ss").format(new java.util.Date(msg.timestamp.toEpochMilli())));
         sb.append(" " + msg.hostname);
         sb.append(" " + msg.application);
         sb.append(": " + msg.message);
