@@ -64,11 +64,9 @@ public class SyslogPrinter {
         return sb.toString();
     }
 
-
-    // TODO: Facility+Severity to PRI field
     static private String getPri(Facility facility, Severity severity) {
-        return "<13>";
+        int prival = (facility.toNumber() * 8) + severity.toNumber();
+        return String.format("<%d>", prival);
     }
-
 
 }
