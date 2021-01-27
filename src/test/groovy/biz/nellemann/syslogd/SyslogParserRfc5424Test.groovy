@@ -67,8 +67,8 @@ class SyslogParserRfc5424Test extends Specification {
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toString() == "1985-04-12T21:20:50.052Z"
         inst.toEpochMilli() == 482188850052
+        //inst.toString() == "1985-04-12T21:20:50.052Z"
     }
 
     void "test parseRfc5424Timestamp ex2"() {
@@ -79,8 +79,8 @@ class SyslogParserRfc5424Test extends Specification {
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toString() == "1985-04-12T23:20:50.052Z"
         inst.toEpochMilli() == 482196050052
+        //inst.toString() == "1985-04-12T23:20:50.052Z"
     }
 
     void "test parseRfc5424Timestamp ex3"() {
@@ -91,8 +91,8 @@ class SyslogParserRfc5424Test extends Specification {
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toString() == "2003-10-11T20:14:15.003Z"
         inst.toEpochMilli() == 1065903255003
+        //inst.toString() == "2003-10-11T20:14:15.003Z"
     }
 
     void "test parseRfc5424Timestamp ex4"() {
@@ -103,8 +103,8 @@ class SyslogParserRfc5424Test extends Specification {
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toString() == "2003-08-24T12:14:15.003Z"
         inst.toEpochMilli() == 1061727255003
+        //inst.toString() == "2003-08-24T12:14:15.003Z"
     }
 
     void "test parseRfc5424Timestamp ex5"() {
@@ -115,10 +115,9 @@ class SyslogParserRfc5424Test extends Specification {
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toString() == "2003-08-24T12:14:15.003Z"
         inst.toEpochMilli() == 1061727255003
+        //inst.toString() == "2003-08-24T12:14:15.003Z"
     }
-
 
 }
 

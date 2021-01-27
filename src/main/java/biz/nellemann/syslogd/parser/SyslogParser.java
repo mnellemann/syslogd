@@ -28,7 +28,7 @@ public abstract class SyslogParser {
 
     public abstract SyslogMessage parse(final String input);
 
-    abstract Instant parseTimestamp(final String dateString);
+    public abstract Instant parseTimestamp(final String dateString);
 
 
     /**

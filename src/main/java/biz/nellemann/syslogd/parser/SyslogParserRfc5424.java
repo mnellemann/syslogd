@@ -93,7 +93,7 @@ public class SyslogParserRfc5424 extends SyslogParser {
      * @param dateString
      * @return
      */
-    protected Instant parseTimestamp(String dateString) {
+    public Instant parseTimestamp(String dateString) {
 
         /*
         https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html

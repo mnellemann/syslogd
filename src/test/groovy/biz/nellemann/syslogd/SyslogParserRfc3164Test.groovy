@@ -4,8 +4,12 @@ import biz.nellemann.syslogd.msg.SyslogMessage
 import biz.nellemann.syslogd.parser.SyslogParser
 import biz.nellemann.syslogd.parser.SyslogParserRfc3164
 import spock.lang.Specification
+
+import java.text.DateFormat
 import java.time.Instant
-import java.time.OffsetDateTime;
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter;
 
 class SyslogParserRfc3164Test extends Specification {
 
@@ -97,13 +101,15 @@ class SyslogParserRfc3164Test extends Specification {
     void "test parseRfc3164Timestamp"() {
 
         setup:
+        OffsetDateTime odt = OffsetDateTime.now();
         String dateString = "Sep 12 20:50:13"
 
         when:
-        Instant inst = syslogParser.parseTimestamp(dateString)
+        Instant instant = syslogParser.parseTimestamp(dateString)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY MMM dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
         then:
-        inst.epochSecond == 1631472613
+        assert formatter.format(instant).equals(odt.getYear() + " " + dateString);
     }
 
 }
