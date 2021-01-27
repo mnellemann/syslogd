@@ -13,7 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package biz.nellemann.syslogd;
+package biz.nellemann.syslogd.net;
+
+import biz.nellemann.syslogd.Application;
+import biz.nellemann.syslogd.LogEvent;
+import biz.nellemann.syslogd.LogListener;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -68,7 +72,7 @@ public class UdpServer extends Thread {
 
     protected List<LogListener> eventListeners = new ArrayList<>();
 
-    public synchronized void addEventListener( LogListener l ) {
+    public synchronized void addEventListener(Application l ) {
         eventListeners.add( l );
     }
 
