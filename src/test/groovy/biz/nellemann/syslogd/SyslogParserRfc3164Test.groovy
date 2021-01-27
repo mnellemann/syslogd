@@ -97,14 +97,13 @@ class SyslogParserRfc3164Test extends Specification {
     void "test parseRfc3164Timestamp"() {
 
         setup:
-        OffsetDateTime odt = OffsetDateTime.now()
         String dateString = "Sep 12 20:50:13"
 
         when:
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toString() == "${odt.getYear()}-09-12T18:50:13Z"
+        inst.epochSecond == 1631472613
     }
 
 }
