@@ -1,6 +1,11 @@
 package biz.nellemann.syslogd;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SyslogPrinter {
+
+    private final static Logger log = LoggerFactory.getLogger(SyslogPrinter.class);
 
     public static String toString(SyslogMessage msg) {
         StringBuilder sb = new StringBuilder();
@@ -44,22 +49,27 @@ public class SyslogPrinter {
         sb.append(" " + msg.application);
         sb.append(": " + msg.message);
 
+        log.debug(sb.toString());
         return sb.toString();
     }
 
 
     // <13>1 2020-09-23T08:57:30.950699+02:00 xps13 mark - - [timeQuality tzKnown="1" isSynced="1" syncAccuracy="125500"] adfdfdf3432434565656
+    // <34>1 2003-10-11T22:14:15.003Z mymachine.example.com su - ID47 - BOM'su root' failed for lonvick on /dev/pts/8
     public static String toRfc5424(SyslogMessage msg) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getPri(msg.facility, msg.severity));
-        sb.append("1"); // Version
-        sb.append(" " + new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new java.util.Date(msg.timestamp.toEpochMilli())));
+        sb.append(getPri(msg.facility, msg.severity)).append("1");
+        sb.append(" " + new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(new java.util.Date(msg.timestamp.toEpochMilli())));
         sb.append(" " + msg.hostname);
         sb.append(" " + msg.application);
-        sb.append(": " + msg.message);
-
+        sb.append(" " + msg.processId);
+        sb.append(" " + msg.messageId);
+        sb.append(" " + msg.structuredData);
+        sb.append(" " + msg.message);
+        log.debug(sb.toString());
         return sb.toString();
     }
+
 
     static private String getPri(Facility facility, Severity severity) {
         int prival = (facility.toNumber() * 8) + severity.toNumber();

@@ -32,16 +32,16 @@ public class SyslogMessage {
     protected String hostname;
 
     // The APP-NAME field SHOULD identify the device or application that originated the message.
-    protected String application;
+    protected String application = "-";
 
     // The PROCID field is often used to provide the process name or process ID associated with a syslog system.
-    protected String processId;
+    protected String processId = "-";
 
     // The MSGID SHOULD identify the type of message.
-    protected String messageId;
+    protected String messageId = "-";
 
     // STRUCTURED-DATA provides a mechanism to express information in a well defined, easily parseable and interpretable data format.
-    protected String structuredData;
+    protected String structuredData = "-";
 
     // The MSG part contains a free-form message that provides information about the event.
     protected final String message;

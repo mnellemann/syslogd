@@ -18,9 +18,13 @@ package biz.nellemann.syslogd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,11 +86,15 @@ public class SyslogParser {
      */
     public static SyslogMessage parseRfc5424(final String input) throws NumberFormatException {
 
-        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\d+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\[.*\\])\\s+(\\S+)", Pattern.CASE_INSENSITIVE);
+        log.warn("parseRfc5424() " + input);
+
+        // "<165>1 2003-08-24T05:14:15.000003-07:00 192.0.2.1 myproc 8710 - - %% It's time to make the do-nuts."
+        // '<13>1 2020-09-23T08:57:30.950699+02:00 xps13 mark - - [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] adfdfdf3432434565656'
+        Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\d+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\[.*\\]|-)\\s+(\\S+)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(input);
         boolean matchFound = matcher.find();
         if(!matchFound) {
-            //log.warn("parseRfc5424() - Match not found in: " + input);
+            log.debug("parseRfc5424() - Match not found in: " + input);
             System.err.println("!" + input);
             return null;
         }
@@ -116,7 +124,8 @@ public class SyslogParser {
             syslogMessage.processId = procId;
         if(msgId != null && !msgId.equals("-"))
             syslogMessage.messageId = msgId;
-        syslogMessage.structuredData = data;
+        if(data != null && !data.equals("-"))
+            syslogMessage.structuredData = data;
 
         return syslogMessage;
     }
@@ -154,15 +163,40 @@ public class SyslogParser {
      */
     static protected Instant parseRfc5424Timestamp(String dateString) {
 
-        Instant instant = null;
+        /*
+        https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
+
+        ex1: 1985-04-12T23:20:50.52Z
+        ex2: 1985-04-12T19:20:50.52-04:00
+        ex3: 2003-10-11T22:14:15.003Z
+        ex4: 2003-08-24T05:14:15.000003-07:00
+        ex5: 2003-08-24T05:14:15.000000003-07:00
+         */
+
+        List<String> formatStrings = Arrays.asList(
+            "yyyy-MM-dd'T'HH:mm:ss.SS'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss.SSXXX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSXXX"
+        );
+
+        for(String formatString : formatStrings)
+        {
+            try {
+                return new SimpleDateFormat(formatString).parse(dateString).toInstant();
+            }
+            catch (ParseException e) {}
+        }
+        /*
         try {
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
             instant = Instant.from(dateTimeFormatter.parse(dateString));
         } catch(DateTimeParseException e) {
             log.error("parseTimestamp()", e);
         }
-
-        return instant;
+        return instant;*/
+        return null;
     }
 
 

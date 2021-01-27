@@ -53,7 +53,7 @@ public class Application implements Callable<Integer>, LogListener {
     @CommandLine.Option(names = "--rfc5424", description = "Parse RFC-5424 messages [default: RFC-3164].", defaultValue = "false")
     private boolean rfc5424;
 
-    @CommandLine.Option(names = { "-f", "--forward"}, description = "Forward to UDP host[:port] (RFC-3164).", paramLabel = "<host>")
+    @CommandLine.Option(names = { "-f", "--forward"}, description = "Forward to UDP host[:port] (RFC-5424).", paramLabel = "<host>")
     private String forward;
 
     @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: 'false'].")
@@ -131,7 +131,7 @@ public class Application implements Callable<Integer>, LogListener {
 
             if(doForward) {
                 try {
-                    udpClient.send(SyslogPrinter.toRfc3164(msg));
+                    udpClient.send(SyslogPrinter.toRfc5424(msg));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
