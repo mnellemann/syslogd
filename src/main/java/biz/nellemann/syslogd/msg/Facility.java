@@ -1,4 +1,4 @@
-package biz.nellemann.syslogd;
+package biz.nellemann.syslogd.msg;
 
 import java.util.HashMap;
 import java.util.Map;

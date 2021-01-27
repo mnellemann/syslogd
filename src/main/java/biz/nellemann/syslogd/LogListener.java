@@ -16,5 +16,5 @@
 package biz.nellemann.syslogd;
 
 public interface LogListener {
-    void onLogEvent(LogEvent event);
+    public void onLogEvent(LogEvent event);
 }

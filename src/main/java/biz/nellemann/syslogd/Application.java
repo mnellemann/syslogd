@@ -15,6 +15,13 @@
  */
 package biz.nellemann.syslogd;
 
+import biz.nellemann.syslogd.msg.SyslogMessage;
+import biz.nellemann.syslogd.net.TcpServer;
+import biz.nellemann.syslogd.net.UdpClient;
+import biz.nellemann.syslogd.net.UdpServer;
+import biz.nellemann.syslogd.parser.SyslogParser;
+import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
+import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
 import org.slf4j.impl.SimpleLogger;
 
 import picocli.CommandLine;
@@ -32,6 +39,7 @@ import java.util.regex.Pattern;
 public class Application implements Callable<Integer>, LogListener {
 
     private boolean doForward = false;
+    private SyslogParser syslogParser;
     private UdpClient udpClient;
 
 
@@ -65,6 +73,12 @@ public class Application implements Callable<Integer>, LogListener {
 
         if(enableDebug) {
             System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+        }
+
+        if(rfc5424) {
+            syslogParser = new SyslogParserRfc5424();
+        } else {
+            syslogParser = new SyslogParserRfc3164();
         }
 
         if(forward != null && !forward.isEmpty()) {
@@ -110,11 +124,7 @@ public class Application implements Callable<Integer>, LogListener {
         String message = event.getMessage();
         SyslogMessage msg = null;
         try {
-            if(rfc5424) {
-                msg = SyslogParser.parseRfc5424(message);
-            } else {
-                msg = SyslogParser.parseRfc3164(message);
-            }
+            msg = syslogParser.parse(message);
         } catch(Exception e) {
             e.printStackTrace();
         }

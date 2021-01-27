@@ -13,26 +13,29 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package biz.nellemann.syslogd;
+package biz.nellemann.syslogd.net;
+
+import biz.nellemann.syslogd.LogEvent;
+import biz.nellemann.syslogd.LogListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 public class TcpServer {
 
     private final int port;
     private ServerSocket serverSocket;
 
-    TcpServer() {
+    public TcpServer() {
         this(514);
     }
 
-    TcpServer(int port) {
+    public TcpServer(int port) {
         this.port = port;
     }
 
