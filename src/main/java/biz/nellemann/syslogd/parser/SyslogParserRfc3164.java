@@ -86,18 +86,18 @@ public class SyslogParserRfc3164 extends SyslogParser {
      */
     public Instant parseTimestamp(String dateString) {
 
-        // We need to add year to parse date correctly
+        // We need to add current year to parse date correctly
         OffsetDateTime odt = OffsetDateTime.now();
 
         // Date: Mmm dd hh:mm:ss
-        Instant instant = null;
         try {
-            instant = Instant.from(dateTimeFormatter.parse(odt.getYear() + " " + dateString));
+            return Instant.from(dateTimeFormatter.parse(odt.getYear() + " " + dateString));
         } catch(DateTimeParseException e) {
-            log.error("parseDate()", e);
+            log.debug("parseTimestamp()", e);
         }
 
-        return instant;
+        log.warn("parseTimestamp() - Could not parse timestamp: " + dateString);
+        return Instant.now();
     }
 
 }

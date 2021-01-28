@@ -21,9 +21,11 @@ import biz.nellemann.syslogd.msg.SyslogMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -106,11 +108,11 @@ public class SyslogParserRfc5424 extends SyslogParser {
          */
 
         List<String> formatStrings = Arrays.asList(
-            "yyyy-MM-dd'T'HH:mm:ss.SS'Z'",
-            "yyyy-MM-dd'T'HH:mm:ss.SSXXX",
-            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
-            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",
-            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSXXX"
+            //"yyyy-MM-dd'T'HH:mm:ss.SS'X'",
+            "yyyy-MM-dd'T'HH:mm:ss.SSX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSX"
         );
 
         for(String formatString : formatStrings)
@@ -118,17 +120,13 @@ public class SyslogParserRfc5424 extends SyslogParser {
             try {
                 return new SimpleDateFormat(formatString).parse(dateString).toInstant();
             }
-            catch (ParseException e) {}
+            catch (ParseException e) {
+                log.debug("parseTimestamp()", e);
+            }
         }
-        /*
-        try {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-            instant = Instant.from(dateTimeFormatter.parse(dateString));
-        } catch(DateTimeParseException e) {
-            log.error("parseTimestamp()", e);
-        }
-        return instant;*/
-        return null;
+
+        log.warn("parseTimestamp() - Could not parse timestamp: " + dateString);
+        return Instant.now();
     }
 
 }
