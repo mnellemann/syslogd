@@ -2,7 +2,7 @@
 
 ## Systemd
 
-Edit the **syslogd.service** and provide wanted options.
+Edit the **syslogd.service** and configure required options.
 
 To install as a systemd service, copy the **syslogd.service**
 file into */etc/systemd/system/* and enable the service:
