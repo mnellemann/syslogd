@@ -12,6 +12,7 @@ public class SyslogPrinter {
 
     private final static char SPACE = ' ';
 
+
     public static String toString(SyslogMessage msg) {
         StringBuilder sb = new StringBuilder(msg.timestamp.toString());
         sb.append(String.format("  [%8.8s.%-6.6s] ", msg.facility, msg.severity));
@@ -42,7 +43,11 @@ public class SyslogPrinter {
     }
 
 
-    // <13>Sep 23 08:53:28 xps13 mark: adfdfdf3432434
+    /**
+     * Return a RFC-3164 formatted string of the SyslogMessage.
+     * @param msg
+     * @return
+     */
     public static String toRfc3164(SyslogMessage msg) {
         StringBuilder sb = new StringBuilder();
         sb.append(getPri(msg.facility, msg.severity));
@@ -55,8 +60,11 @@ public class SyslogPrinter {
     }
 
 
-    // <13>1 2020-09-23T08:57:30.950699+02:00 xps13 mark - - [timeQuality tzKnown="1" isSynced="1" syncAccuracy="125500"] adfdfdf3432434565656
-    // <34>1 2003-10-11T22:14:15.003Z mymachine.example.com su - ID47 - BOM'su root' failed for lonvick on /dev/pts/8
+    /**
+     * Return a RFC-5424 formatted string of the SyslogMessage.
+     * @param msg
+     * @return
+     */
     public static String toRfc5424(SyslogMessage msg) {
         StringBuilder sb = new StringBuilder();
         sb.append(getPri(msg.facility, msg.severity)).append("1");
@@ -68,6 +76,26 @@ public class SyslogPrinter {
         sb.append(SPACE).append(msg.structuredData);
         sb.append(SPACE).append(msg.message);
         log.debug(sb.toString());
+        return sb.toString();
+    }
+
+
+    /**
+     * Return a GELF formatted string of the SyslogMessage.
+     * https://www.graylog.org/features/gelf
+     * @param msg
+     * @return
+     */
+    public static String toGelf(SyslogMessage msg) {
+        StringBuilder sb = new StringBuilder("{ \"version\": \"1.1\",");
+        sb.append(String.format("\"host\": \"%s\",", msg.hostname));
+        sb.append(String.format("\"short_message\": \"%s\",", msg.message));
+        //sb.append(String.format("\"full_message\": \"%s\",", msg.message));
+        sb.append(String.format("\"timestamp\": %d,", msg.timestamp.getEpochSecond()));
+        sb.append(String.format("\"level\": %d,", msg.severity.toNumber()));
+        sb.append(String.format("\"_facility\": \"%s\",", msg.facility));
+        sb.append(String.format("\"_severity\": \"%s\",", msg.severity));
+        sb.append("}");
         return sb.toString();
     }
 
