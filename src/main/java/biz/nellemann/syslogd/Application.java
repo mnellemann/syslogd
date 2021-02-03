@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
-        description = "Simple Syslog Server",
+        description = "Syslog Server",
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Application implements Callable<Integer>, LogListener {
 
@@ -63,6 +63,9 @@ public class Application implements Callable<Integer>, LogListener {
 
     @CommandLine.Option(names = { "-f", "--forward"}, description = "Forward to UDP host[:port] (RFC-5424).", paramLabel = "<host>")
     private String forward;
+
+    @CommandLine.Option(names = { "-g", "--gelf"}, description = "Forward in Graylog (GELF) JSON format.", defaultValue = "false")
+    private boolean gelf;
 
     @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: 'false'].")
     private boolean enableDebug = false;
@@ -141,7 +144,11 @@ public class Application implements Callable<Integer>, LogListener {
 
             if(doForward) {
                 try {
-                    udpClient.send(SyslogPrinter.toRfc5424(msg));
+                    if(gelf) {
+                        udpClient.send(SyslogPrinter.toGelf(msg));
+                    } else {
+                        udpClient.send(SyslogPrinter.toRfc5424(msg));
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

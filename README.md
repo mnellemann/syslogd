@@ -1,8 +1,8 @@
-# Simple Syslog Server
+# Syslog Server
 
-All received messages are written to *stdout* and optionally forwarded to another syslog server.
+All received messages are written to *stdout* and/or forwarded to another syslog server.
 
-The syslog server is able to listen on UDP and/or TCP and parses syslog messages in either RFC5424 or RFC3164 (BSD) format.
+The syslog server is able to listen on both UDP and TCP and parses syslog messages in either RFC5424 or RFC3164 (BSD) format.
 
 The default syslog port (514) requires you to run syslogd as root / administrator.
 If you do not wish to do so, you can choose a port number (with the *-p* or *--port* flag) above 1024.
@@ -13,11 +13,12 @@ If you do not wish to do so, you can choose a port number (with the *-p* or *--p
 - Run *bin/syslogd*, use the *-h* option for help :)
 
 ````
-Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdout] [--[no-]tcp] [--[no-]udp]
+Usage: syslogd [-dghV] [--[no-]ansi] [--[no-]stdout] [--[no-]tcp] [--[no-]udp]
                [--rfc5424] [-f=<host>] [-p=<port>]
-Simple Syslog Server
+Syslog Server
   -d, --debug            Enable debugging [default: 'false'].
   -f, --forward=<host>   Forward to UDP host[:port] (RFC-5424).
+  -g, --gelf             Forward in Graylog (GELF) JSON format.
   -h, --help             Show this help message and exit.
       --[no-]ansi        Output ANSI colors [default: true].
       --[no-]stdout      Output messages to stdout [default: true].
@@ -26,7 +27,6 @@ Simple Syslog Server
   -p, --port=<port>      Listening port [default: 514].
       --rfc5424          Parse RFC-5424 messages [default: RFC-3164].
   -V, --version          Print version information and exit.
-
 ````
 
 ### Examples
@@ -48,6 +48,13 @@ Listening on the standard syslog port (requires root privileges) and forwarding 
 ```
 java -jar /path/to/syslogd-x.y.z-all.jar --forward remotehost:1514
 ```
+
+Forwarding to a Graylog server in GELF format.
+
+```
+java -jar /path/to/syslogd-x.y.z-all.jar --forward remotehost:12201 --gelf
+```
+
 
 If you don't want any output locally (only forwarding), you can use the ```--no-stdout``` flag.
 
