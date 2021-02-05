@@ -71,9 +71,9 @@ public class SyslogPrinter {
         sb.append(SPACE).append(new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(new java.util.Date(msg.timestamp.toEpochMilli())));
         sb.append(SPACE).append(msg.hostname);
         sb.append(SPACE).append(msg.application);
-        sb.append(SPACE).append(msg.processId);
-        sb.append(SPACE).append(msg.messageId);
-        sb.append(SPACE).append(msg.structuredData);
+        sb.append(SPACE).append(msg.processId != null ? msg.processId : "-");
+        sb.append(SPACE).append(msg.messageId != null ? msg.messageId : "-");
+        sb.append(SPACE).append(msg.structuredData != null ? msg.structuredData : "-");
         sb.append(SPACE).append(msg.message);
         log.debug(sb.toString());
         return sb.toString();
@@ -95,6 +95,10 @@ public class SyslogPrinter {
         sb.append(String.format("\"level\": %d,", msg.severity.toNumber()));
         sb.append(String.format("\"_facility\": \"%s\",", msg.facility));
         sb.append(String.format("\"_severity\": \"%s\",", msg.severity));
+        sb.append(String.format("\"_application\": \"%s\",", msg.application));
+        if(msg.processId != null) { sb.append(String.format("\"_process-id\": \"%s\",", msg.processId)); }
+        if(msg.messageId != null) { sb.append(String.format("\"_message-id\": \"%s\",", msg.messageId)); }
+        if(msg.structuredData != null) { sb.append(String.format("\"_structured-data\": \"%s\",", msg.structuredData)); }
         sb.append("}");
         return sb.toString();
     }

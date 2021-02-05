@@ -24,7 +24,7 @@ class SyslogParserRfc5424Test extends Specification {
 
         then:
         msg.message == "adfdfdf3432434565656"
-        msg.processId == "-"
+        msg.structuredData == "[exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"]"
     }
 
     void "test rfc5424 example message"() {
@@ -38,9 +38,8 @@ class SyslogParserRfc5424Test extends Specification {
         then:
         msg.hostname == "mymachine.example.com"
         msg.application == "su"
-        msg.processId == "-"
         msg.messageId == "ID47"
-        msg.structuredData == "-"
+        msg.processId == null
     }
 
     void "test rfc5424 example2 message"() {
@@ -55,8 +54,7 @@ class SyslogParserRfc5424Test extends Specification {
         msg.hostname == "192.0.2.1"
         msg.application == "myproc"
         msg.processId == "8710"
-        msg.messageId == "-"
-        msg.structuredData == "-"
+        msg.structuredData == null
     }
 
     void "test parseRfc5424Timestamp ex1"() {

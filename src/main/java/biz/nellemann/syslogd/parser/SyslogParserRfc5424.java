@@ -121,7 +121,7 @@ public class SyslogParserRfc5424 extends SyslogParser {
                 return new SimpleDateFormat(formatString).parse(dateString).toInstant();
             }
             catch (ParseException e) {
-                log.debug("parseTimestamp()", e);
+                log.debug("parseTimestamp() " + e.getMessage());
             }
         }
 
