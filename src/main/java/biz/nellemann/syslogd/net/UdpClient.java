@@ -15,7 +15,7 @@ public class UdpClient {
     private InetAddress address;
     private final Integer port;
 
-    public UdpClient(String host, Integer port) throws UnknownHostException, SocketException {
+   public UdpClient(String host, Integer port) {
 
         try {
             this.address = InetAddress.getByName(host);

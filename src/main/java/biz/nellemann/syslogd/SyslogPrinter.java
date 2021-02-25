@@ -17,7 +17,7 @@ public class SyslogPrinter {
         StringBuilder sb = new StringBuilder(msg.timestamp.toString());
         sb.append(String.format("  [%8.8s.%-6.6s] ", msg.facility, msg.severity));
         sb.append(String.format(" %-16.16s ", msg.hostname));
-        sb.append(String.format(" %-32.32s  ", msg.application));
+        sb.append(String.format(" %-16.16s  ", msg.application));
         sb.append(msg.message);
         return sb.toString();
     }
@@ -36,7 +36,7 @@ public class SyslogPrinter {
 
         sb.append(String.format("  [%8.8s.%-6.6s] ", msg.facility, msg.severity)).append(Ansi.RESET);
         sb.append(Ansi.BLUE).append(String.format(" %-16.16s ", msg.hostname)).append(Ansi.RESET);
-        sb.append(Ansi.CYAN).append(String.format(" %-32.32s  ", msg.application)).append(Ansi.RESET);
+        sb.append(Ansi.CYAN).append(String.format(" %-16.16s  ", msg.application)).append(Ansi.RESET);
         sb.append(msg.message);
 
         return sb.toString();

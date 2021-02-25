@@ -19,7 +19,6 @@ class SyslogParserRfc3164Test extends Specification {
         syslogParser = new SyslogParserRfc3164();
     }
 
-
     void "test rfc3164 aix/vios message"() {
 
         setup:

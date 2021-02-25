@@ -4,7 +4,7 @@ plugins {
     id 'application'
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.nemerosa.versioning" version "2.14.0"
-    id "nebula.ospackage" version "8.4.2"
+    id "nebula.ospackage" version "8.5.2"
 }
 
 repositories {

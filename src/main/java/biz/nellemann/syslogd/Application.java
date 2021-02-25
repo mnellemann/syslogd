@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
-        description = "Syslog Server",
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Application implements Callable<Integer>, LogListener {
 
