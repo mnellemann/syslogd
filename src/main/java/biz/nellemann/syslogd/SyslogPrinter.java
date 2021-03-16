@@ -81,7 +81,7 @@ public class SyslogPrinter {
 
 
     /**
-     * Return a GELF formatted string of the SyslogMessage.
+     * Return a GELF JSON formatted string of the SyslogMessage.
      * https://www.graylog.org/features/gelf
      * @param msg
      * @return
@@ -100,6 +100,32 @@ public class SyslogPrinter {
         if(msg.messageId != null) { sb.append(String.format("\"_message-id\": \"%s\",", msg.messageId)); }
         if(msg.structuredData != null) { sb.append(String.format("\"_structured-data\": \"%s\",", msg.structuredData)); }
         sb.append("}");
+        return sb.toString();
+    }
+
+
+    /**
+     * Return a Loki JSON formatted string of the SyslogMessage.
+     * https://grafana.com/docs/loki/latest/api/
+     * @param msg
+     * @return
+     */
+
+/*
+{ "streams": [ { "stream": { "label": "value" }, "values": [ [ "<unix epoch in nanoseconds>", "<log line>" ], [ "<unix epoch in nanoseconds>", "<log line>" ] ] } ] }
+{ "streams": [ { "stream": { "host": "hyperion", "facility": "USER", "severity": "NOTICE", "application": "mark"}, "values": [ [ "1615823598000000000", "Test 2345534343434" ] ] } ] }
+{ "streams": [ { "stream": { "host": "hyperion", "facility": "USER", "severity": "NOTICE", "application": "mark"}, "values": [ [ "1615842165000000000", "Test" ] ] } ] }
+*/
+
+    public static String toLoki(SyslogMessage msg) {
+        StringBuilder sb = new StringBuilder("{ \"streams\": [ { \"stream\": {");
+        sb.append(String.format(" \"host\": \"%s\",", msg.hostname));
+        sb.append(String.format(" \"facility\": \"%s\",", msg.facility));
+        sb.append(String.format(" \"severity\": \"%s\",", msg.severity));
+        sb.append(String.format(" \"application\": \"%s\"", msg.application));
+        sb.append("}, \"values\": [ ");
+        sb.append(String.format("[ \"%d\", \"%s\" ]", msg.timestamp.getEpochSecond() * 1000000000l, msg.message));
+        sb.append(" ] } ] }");
         return sb.toString();
     }
 

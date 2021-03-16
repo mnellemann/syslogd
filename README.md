@@ -63,3 +63,13 @@ If you don't want any output locally (only forwarding), you can use the ```--no-
 
 Syslog messages from AIX (and IBM Power Virtual I/O Servers) can be troublesome with some logging solutions. These can be received with
 syslogd and optionally forwarded on to Graylog, Splunk or other logging solutions.
+
+
+## Development
+
+
+### Test Grafana Loki
+
+```shell
+docker run --rm -d --name=loki -p 3100:3100 grafana/loki
+```
