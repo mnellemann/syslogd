@@ -34,7 +34,7 @@ class SyslogPrinterTest extends Specification {
         String output = SyslogPrinter.toLoki(msg)
 
         then:
-        output == '{ "streams": [ { "stream": { "host": "xps13", "facility": "USER", "severity": "NOTICE", "application": "mark"}, "values": [ [ "1600845200000000000", "adfdfdf3432434565656" ] ] } ] }'
+        output == '{ "streams": [ { "stream": { "host": "xps13", "facility": "user", "severity": "notice", "application": "mark"}, "values": [ [ "1600845200000000000", "adfdfdf3432434565656" ] ] } ] }'
     }
 
 }

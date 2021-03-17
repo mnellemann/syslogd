@@ -98,17 +98,16 @@ public class Application implements Callable<Integer>, LogListener {
                 udpClient = new UdpClient(getInetSocketAddress(syslog));
                 doForward = true;
             } else {
-                throw new UnsupportedOperationException("Syslog protocol not implemented: " + syslog.getScheme());
+                throw new UnsupportedOperationException("Forward protocol not implemented: " + syslog.getScheme());
             }
         }
 
         if(gelf != null) {
-            System.err.println(gelf.getScheme());
             if(gelf.getScheme().toLowerCase(Locale.ROOT).equals("udp")) {
                 gelfClient = new UdpClient(getInetSocketAddress(gelf));
                 doForward = true;
             } else {
-                throw new UnsupportedOperationException("GELF protocol not implemented: " + gelf.getScheme());
+                throw new UnsupportedOperationException("Forward protocol not implemented: " + gelf.getScheme());
             }
         }
 
@@ -181,28 +180,6 @@ public class Application implements Callable<Integer>, LogListener {
 
     private InetSocketAddress getInetSocketAddress(URI input) {
         InetSocketAddress inetSocketAddress = new InetSocketAddress(input.getHost(), input.getPort());
-        return inetSocketAddress;
-    }
-
-
-    private InetSocketAddress getInetSocketAddress(String input) {
-
-        String dstHost;
-        int dstPort;
-        InetSocketAddress inetSocketAddress = null;
-
-        Pattern pattern = Pattern.compile("^([^:]+)(?::([0-9]+))?$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(input);
-        if(matcher.find()) {
-            dstHost = matcher.group(1);
-            if(matcher.groupCount() == 2 && matcher.group(2) != null) {
-                dstPort = Integer.parseInt(matcher.group(2));
-            } else {
-                dstPort = 514;
-            }
-            inetSocketAddress = new InetSocketAddress(dstHost, dstPort);
-        }
-
         return inetSocketAddress;
     }
 

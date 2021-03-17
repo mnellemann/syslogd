@@ -110,13 +110,6 @@ public class SyslogPrinter {
      * @param msg
      * @return
      */
-
-/*
-{ "streams": [ { "stream": { "label": "value" }, "values": [ [ "<unix epoch in nanoseconds>", "<log line>" ], [ "<unix epoch in nanoseconds>", "<log line>" ] ] } ] }
-{ "streams": [ { "stream": { "host": "hyperion", "facility": "USER", "severity": "NOTICE", "application": "mark"}, "values": [ [ "1615823598000000000", "Test 2345534343434" ] ] } ] }
-{ "streams": [ { "stream": { "host": "hyperion", "facility": "USER", "severity": "NOTICE", "application": "mark"}, "values": [ [ "1615842165000000000", "Test" ] ] } ] }
-*/
-
     public static String toLoki(SyslogMessage msg) {
         StringBuilder sb = new StringBuilder("{ \"streams\": [ { \"stream\": {");
         sb.append(String.format(" \"host\": \"%s\",", msg.hostname));

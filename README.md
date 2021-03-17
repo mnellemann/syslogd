@@ -75,6 +75,9 @@ If you don't want any output locally (only forwarding), you can use the ```--no-
 Syslog messages from AIX (and IBM Power Virtual I/O Servers) can be troublesome with some logging solutions. These can be received with
 syslogd and then forwarded on to your preferred logging solution.
 
+### Forwarding to Grafana Loki
+
+Forwarding is currently done by making HTTP connections to the Loki API, which works fine for low volume messages, but might cause issues for large volume of messages.
 
 ## Development Notes
 

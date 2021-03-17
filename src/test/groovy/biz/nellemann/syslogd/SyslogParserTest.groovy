@@ -19,7 +19,7 @@ class SyslogParserTest extends Specification {
         int code = syslogParser.getFacility("132")
 
         then:
-        code == Facility.LOCAL0.toNumber()
+        code == Facility.local0.toNumber()
     }
 
     void "test severity WARN"() {
@@ -27,7 +27,7 @@ class SyslogParserTest extends Specification {
         int code = syslogParser.getSeverity("132")
 
         then:
-        code == Severity.WARN.toNumber()
+        code == Severity.warn.toNumber()
     }
 
 }

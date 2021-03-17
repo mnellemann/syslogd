@@ -28,6 +28,8 @@ public class LokiClient {
             con = (HttpURLConnection)pushUrl.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");
+            con.setConnectTimeout(500);
+            con.setReadTimeout(100);
             con.setDoOutput(true);
 
             byte[] input = msg.getBytes(StandardCharsets.UTF_8);
@@ -43,7 +45,7 @@ public class LokiClient {
             }
 
         } catch (IOException e) {
-            log.warn("send() - " + e.getMessage());
+            log.error("send() - " + e.getMessage());
         } finally {
             if(con != null) {
                 con.disconnect();
