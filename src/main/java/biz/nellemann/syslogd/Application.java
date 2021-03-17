@@ -30,6 +30,9 @@ import picocli.CommandLine.Command;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URL;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +49,7 @@ public class Application implements Callable<Integer>, LogListener {
     private LokiClient lokiClient;
 
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].", defaultValue = "514")
+    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].", defaultValue = "514", paramLabel = "<num>")
     private int port;
 
     @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true].", defaultValue = "true")
@@ -64,14 +67,14 @@ public class Application implements Callable<Integer>, LogListener {
     @CommandLine.Option(names = "--rfc5424", description = "Parse RFC-5424 messages [default: RFC-3164].", defaultValue = "false")
     private boolean rfc5424;
 
-    @CommandLine.Option(names = { "-s", "--syslog"}, description = "Forward to Syslog UDP host[:port] (RFC-5424).", paramLabel = "<host>")
-    private String syslog;
+    @CommandLine.Option(names = { "-s", "--syslog"}, description = "Forward to Syslog <udp://host:port> (RFC-5424).", paramLabel = "<uri>")
+    private URI syslog;
 
-    @CommandLine.Option(names = { "-g", "--gelf"}, description = "Forward to Graylog host[:port] (GELF).", paramLabel = "<host>")
-    private String gelf;
+    @CommandLine.Option(names = { "-g", "--gelf"}, description = "Forward to Graylog <udp://host:port>.", paramLabel = "<uri>")
+    private URI gelf;
 
-    @CommandLine.Option(names = { "-l", "--loki"}, description = "Forward to Grafana Loki.", paramLabel = "<url>")
-    private String loki;
+    @CommandLine.Option(names = { "-l", "--loki"}, description = "Forward to Grafana Loki <http://host:port>.", paramLabel = "<url>")
+    private URL loki;
 
     @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: 'false'].")
     private boolean enableDebug = false;
@@ -90,17 +93,26 @@ public class Application implements Callable<Integer>, LogListener {
             syslogParser = new SyslogParserRfc3164();
         }
 
-        if(syslog != null && !syslog.isEmpty()) {
-            udpClient = new UdpClient(getInetSocketAddress(syslog));
-            doForward = true;
+        if(syslog != null) {
+            if(syslog.getScheme().toLowerCase(Locale.ROOT).equals("udp")) {
+                udpClient = new UdpClient(getInetSocketAddress(syslog));
+                doForward = true;
+            } else {
+                throw new UnsupportedOperationException("Syslog protocol not implemented: " + syslog.getScheme());
+            }
         }
 
-        if(gelf != null && !gelf.isEmpty()) {
-            gelfClient = new UdpClient(getInetSocketAddress(gelf));
-            doForward = true;
+        if(gelf != null) {
+            System.err.println(gelf.getScheme());
+            if(gelf.getScheme().toLowerCase(Locale.ROOT).equals("udp")) {
+                gelfClient = new UdpClient(getInetSocketAddress(gelf));
+                doForward = true;
+            } else {
+                throw new UnsupportedOperationException("GELF protocol not implemented: " + gelf.getScheme());
+            }
         }
 
-        if(loki != null && !loki.isEmpty()) {
+        if(loki != null) {
             lokiClient = new LokiClient(loki);
             doForward = true;
         }
@@ -164,6 +176,12 @@ public class Application implements Callable<Integer>, LogListener {
             }
         }
 
+    }
+
+
+    private InetSocketAddress getInetSocketAddress(URI input) {
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(input.getHost(), input.getPort());
+        return inetSocketAddress;
     }
 
 
