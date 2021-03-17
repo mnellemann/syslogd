@@ -42,6 +42,7 @@ public class LokiClient {
             int responseCode = con.getResponseCode();
             if(responseCode != 204) {
                 log.warn("send() - response: " + responseCode);
+                log.debug("send() - msg: " + msg);
             }
 
         } catch (IOException e) {

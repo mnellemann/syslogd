@@ -112,13 +112,23 @@ public class SyslogPrinter {
      */
     public static String toLoki(SyslogMessage msg) {
         StringBuilder sb = new StringBuilder("{ \"streams\": [ { \"stream\": {");
-        sb.append(String.format(" \"host\": \"%s\",", msg.hostname));
+        sb.append(String.format(" \"hostname\": \"%s\",", msg.hostname));
         sb.append(String.format(" \"facility\": \"%s\",", msg.facility));
-        sb.append(String.format(" \"severity\": \"%s\",", msg.severity));
+        sb.append(String.format(" \"level\": \"%s\",", msg.severity));
         sb.append(String.format(" \"application\": \"%s\"", msg.application));
         sb.append("}, \"values\": [ ");
-        sb.append(String.format("[ \"%d\", \"%s\" ]", msg.timestamp.getEpochSecond() * 1000000000l, msg.message));
+        sb.append(String.format("[ \"%d\", \"%s\" ]", msg.timestamp.getEpochSecond() * 1000000000l, getMessageLine(msg)));
         sb.append(" ] } ] }");
+        return sb.toString();
+    }
+
+
+    private static String getMessageLine(SyslogMessage msg) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("[%s.%s] ", msg.facility, msg.severity));
+        sb.append(String.format("%s ", msg.hostname));
+        sb.append(String.format("%s ", msg.application));
+        sb.append(msg.message);
         return sb.toString();
     }
 
