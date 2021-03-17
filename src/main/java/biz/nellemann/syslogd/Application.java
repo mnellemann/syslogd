@@ -16,6 +16,7 @@
 package biz.nellemann.syslogd;
 
 import biz.nellemann.syslogd.msg.SyslogMessage;
+import biz.nellemann.syslogd.net.LokiClient;
 import biz.nellemann.syslogd.net.TcpServer;
 import biz.nellemann.syslogd.net.UdpClient;
 import biz.nellemann.syslogd.net.UdpServer;
@@ -28,6 +29,10 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URL;
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,9 +45,11 @@ public class Application implements Callable<Integer>, LogListener {
     private boolean doForward = false;
     private SyslogParser syslogParser;
     private UdpClient udpClient;
+    private UdpClient gelfClient;
+    private LokiClient lokiClient;
 
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].", defaultValue = "514")
+    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].", defaultValue = "514", paramLabel = "<num>")
     private int port;
 
     @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true].", defaultValue = "true")
@@ -60,11 +67,14 @@ public class Application implements Callable<Integer>, LogListener {
     @CommandLine.Option(names = "--rfc5424", description = "Parse RFC-5424 messages [default: RFC-3164].", defaultValue = "false")
     private boolean rfc5424;
 
-    @CommandLine.Option(names = { "-f", "--forward"}, description = "Forward to UDP host[:port] (RFC-5424).", paramLabel = "<host>")
-    private String forward;
+    @CommandLine.Option(names = { "-s", "--syslog"}, description = "Forward to Syslog <udp://host:port> (RFC-5424).", paramLabel = "<uri>")
+    private URI syslog;
 
-    @CommandLine.Option(names = { "-g", "--gelf"}, description = "Forward in Graylog (GELF) JSON format.", defaultValue = "false")
-    private boolean gelf;
+    @CommandLine.Option(names = { "-g", "--gelf"}, description = "Forward to Graylog <udp://host:port>.", paramLabel = "<uri>")
+    private URI gelf;
+
+    @CommandLine.Option(names = { "-l", "--loki"}, description = "Forward to Grafana Loki <http://host:port>.", paramLabel = "<url>")
+    private URL loki;
 
     @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: 'false'].")
     private boolean enableDebug = false;
@@ -83,23 +93,27 @@ public class Application implements Callable<Integer>, LogListener {
             syslogParser = new SyslogParserRfc3164();
         }
 
-        if(forward != null && !forward.isEmpty()) {
-            String fHost, fPort;
-            Pattern pattern = Pattern.compile("^([^:]+)(?::([0-9]+))?$", Pattern.CASE_INSENSITIVE);
-            Matcher matcher = pattern.matcher(forward);
-            if(matcher.find()) {
-                fHost = matcher.group(1);
-                if(matcher.groupCount() == 2 && matcher.group(2) != null) {
-                    fPort = matcher.group(2);
-                } else {
-                    fPort = "514";
-                }
+        if(syslog != null) {
+            if(syslog.getScheme().toLowerCase(Locale.ROOT).equals("udp")) {
+                udpClient = new UdpClient(getInetSocketAddress(syslog));
+                doForward = true;
             } else {
-                fHost = "localhost";
-                fPort = "514";
+                throw new UnsupportedOperationException("Syslog protocol not implemented: " + syslog.getScheme());
             }
+        }
 
-            udpClient = new UdpClient(fHost, Integer.parseInt(fPort));
+        if(gelf != null) {
+            System.err.println(gelf.getScheme());
+            if(gelf.getScheme().toLowerCase(Locale.ROOT).equals("udp")) {
+                gelfClient = new UdpClient(getInetSocketAddress(gelf));
+                doForward = true;
+            } else {
+                throw new UnsupportedOperationException("GELF protocol not implemented: " + gelf.getScheme());
+            }
+        }
+
+        if(loki != null) {
+            lokiClient = new LokiClient(loki);
             doForward = true;
         }
 
@@ -143,17 +157,53 @@ public class Application implements Callable<Integer>, LogListener {
 
             if(doForward) {
                 try {
-                    if(gelf) {
-                        udpClient.send(SyslogPrinter.toGelf(msg));
-                    } else {
+
+                    if(udpClient != null) {
                         udpClient.send(SyslogPrinter.toRfc5424(msg));
                     }
+
+                    if(gelfClient != null) {
+                        gelfClient.send(SyslogPrinter.toGelf(msg));
+                    }
+
+                    if(lokiClient != null) {
+                        lokiClient.send(SyslogPrinter.toLoki(msg));
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
 
+    }
+
+
+    private InetSocketAddress getInetSocketAddress(URI input) {
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(input.getHost(), input.getPort());
+        return inetSocketAddress;
+    }
+
+
+    private InetSocketAddress getInetSocketAddress(String input) {
+
+        String dstHost;
+        int dstPort;
+        InetSocketAddress inetSocketAddress = null;
+
+        Pattern pattern = Pattern.compile("^([^:]+)(?::([0-9]+))?$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(input);
+        if(matcher.find()) {
+            dstHost = matcher.group(1);
+            if(matcher.groupCount() == 2 && matcher.group(2) != null) {
+                dstPort = Integer.parseInt(matcher.group(2));
+            } else {
+                dstPort = 514;
+            }
+            inetSocketAddress = new InetSocketAddress(dstHost, dstPort);
+        }
+
+        return inetSocketAddress;
     }
 
 
