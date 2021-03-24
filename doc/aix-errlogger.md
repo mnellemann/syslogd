@@ -2,7 +2,7 @@
 
 Instructions for how to forward errlogger messages from IBM AIX and IBM Power Systems VIO Servers to a remote logging solution.
 
-More information on the AIX errlogger is available on the IBM [knowledge center](https://www.ibm.com/support/knowledgecenter/ssw_aix_72/generalprogramming/error_notice.html).
+More information about the AIX errlogger is available on the IBM [knowledge center](https://www.ibm.com/support/knowledgecenter/ssw_aix_72/generalprogramming/error_notice.html).
 
 ## On each AIX / VIO Server
 
@@ -24,6 +24,9 @@ Add the following to the /etc/syslog.conf file:
 
 # Also log to a local file, rotated daily and kept for 7 days
 *.warn /var/log/error.log rotate time 1d files 7
+
+# Optionally log authentication messages to remote host
+#auth.info,authpriv.info @10.32.64.29
 ```
 We use *10.32.64.1* as our remote syslog server in the above example.
 
