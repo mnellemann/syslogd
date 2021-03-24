@@ -26,7 +26,7 @@ Add the following to the /etc/syslog.conf file:
 *.warn /var/log/error.log rotate time 1d files 7
 
 # Optionally log authentication messages to remote host
-#auth.info,authpriv.info @10.32.64.29
+#auth.info,authpriv.info @10.32.64.1
 ```
 We use *10.32.64.1* as our remote syslog server in the above example.
 

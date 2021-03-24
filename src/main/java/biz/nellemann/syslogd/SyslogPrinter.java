@@ -3,6 +3,7 @@ package biz.nellemann.syslogd;
 import biz.nellemann.syslogd.msg.Facility;
 import biz.nellemann.syslogd.msg.Severity;
 import biz.nellemann.syslogd.msg.SyslogMessage;
+import biz.nellemann.syslogd.parser.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +90,7 @@ public class SyslogPrinter {
     public static String toGelf(SyslogMessage msg) {
         StringBuilder sb = new StringBuilder("{ \"version\": \"1.1\",");
         sb.append(String.format("\"host\": \"%s\",", msg.hostname));
-        sb.append(String.format("\"short_message\": \"%s\",", msg.message));
+        sb.append(String.format("\"short_message\": \"%s\",", JsonUtil.encode(msg.message)));
         //sb.append(String.format("\"full_message\": \"%s\",", msg.message));
         sb.append(String.format("\"timestamp\": %d,", msg.timestamp.getEpochSecond()));
         sb.append(String.format("\"level\": %d,", msg.severity.toNumber()));
@@ -119,6 +120,7 @@ public class SyslogPrinter {
         sb.append("}, \"values\": [ ");
         sb.append(String.format("[ \"%d\", \"%s\" ]", msg.timestamp.getEpochSecond() * 1000000000l, getMessageLine(msg)));
         sb.append(" ] } ] }");
+        log.debug(sb.toString());
         return sb.toString();
     }
 
@@ -128,7 +130,7 @@ public class SyslogPrinter {
         sb.append(String.format("[%s.%s] ", msg.facility, msg.severity));
         sb.append(String.format("%s ", msg.hostname));
         sb.append(String.format("%s ", msg.application));
-        sb.append(msg.message);
+        sb.append(JsonUtil.encode(msg.message));
         return sb.toString();
     }
 

@@ -7,7 +7,6 @@ import spock.lang.Specification
 
 class SyslogPrinterTest extends Specification {
 
-
     void setup() {
     }
 
