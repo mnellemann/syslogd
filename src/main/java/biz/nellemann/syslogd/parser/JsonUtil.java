@@ -1,8 +1,8 @@
-package biz.nellemann.syslogd.parser;
-
 /*
-    Code from https://gist.github.com/jjfiv/2ac5c081e088779f49aa, which is BSD licensed: http://lemurproject.org/galago-license
+    This code is from https://gist.github.com/jjfiv/2ac5c081e088779f49aa, which is BSD licensed:
+    http://lemurproject.org/galago-license
 */
+package biz.nellemann.syslogd.parser;
 
 public class JsonUtil {
 

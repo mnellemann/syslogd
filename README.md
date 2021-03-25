@@ -4,6 +4,8 @@ All received messages are written to *stdout* and/or forwarded to a remote loggi
 
 The syslog server is able to listen on both UDP and TCP and parses syslog messages in either RFC5424 or RFC3164 (BSD) format.
 
+This software is free to use and is licensed under the [Apache 2.0 License](https://bitbucket.org/mnellemann/syslogd/src/master/LICENSE).
+
 ![architecture](https://bitbucket.org/mnellemann/syslogd/downloads/syslogd.svg)
 
 The default syslog port (514) requires you to run syslogd as root / administrator.
