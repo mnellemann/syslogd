@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 public class LokiClient {
 
     private final static Logger log = LoggerFactory.getLogger(LokiClient.class);
-
     private final URL url;
 
 
@@ -44,6 +43,7 @@ public class LokiClient {
                 log.warn("send() - response: " + responseCode);
                 log.debug("send() - msg: " + msg);
             }
+
 
         } catch (IOException e) {
             log.error("send() - " + e.getMessage());
