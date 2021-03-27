@@ -15,9 +15,8 @@
  */
 package biz.nellemann.syslogd.net;
 
-import biz.nellemann.syslogd.Application;
-import biz.nellemann.syslogd.LogEvent;
-import biz.nellemann.syslogd.LogListener;
+import biz.nellemann.syslogd.LogReceiveEvent;
+import biz.nellemann.syslogd.LogReceiveListener;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -36,7 +35,6 @@ public class UdpServer extends Thread {
     }
 
     public UdpServer(int port) throws IOException {
-        super("SyslogServer");
         socket = new DatagramSocket(port);
     }
 
@@ -59,8 +57,8 @@ public class UdpServer extends Thread {
     }
 
     private synchronized void sendEvent(String message) {
-        LogEvent event = new LogEvent( this, message);
-        for (LogListener eventListener : eventListeners) {
+        LogReceiveEvent event = new LogReceiveEvent( this, message);
+        for (LogReceiveListener eventListener : eventListeners) {
             eventListener.onLogEvent(event);
         }
     }
@@ -70,13 +68,17 @@ public class UdpServer extends Thread {
      * Event Listener Configuration
      */
 
-    protected List<LogListener> eventListeners = new ArrayList<>();
+    protected List<LogReceiveListener> eventListeners = new ArrayList<>();
 
-    public synchronized void addEventListener(Application l ) {
-        eventListeners.add( l );
+    public synchronized void addEventListener(LogReceiveListener listener ) {
+        eventListeners.add( listener );
     }
 
-    public synchronized void removeEventListener( LogListener l ) {
+    public synchronized void addEventListener(List<LogReceiveListener> listeners ) {
+        eventListeners.addAll(listeners);
+    }
+
+    public synchronized void removeEventListener( LogReceiveListener l ) {
         eventListeners.remove( l );
     }
 

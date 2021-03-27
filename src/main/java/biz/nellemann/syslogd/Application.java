@@ -16,10 +16,7 @@
 package biz.nellemann.syslogd;
 
 import biz.nellemann.syslogd.msg.SyslogMessage;
-import biz.nellemann.syslogd.net.LokiClient;
-import biz.nellemann.syslogd.net.TcpServer;
-import biz.nellemann.syslogd.net.UdpClient;
-import biz.nellemann.syslogd.net.UdpServer;
+import biz.nellemann.syslogd.net.*;
 import biz.nellemann.syslogd.parser.SyslogParser;
 import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
 import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
@@ -32,21 +29,18 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
-public class Application implements Callable<Integer>, LogListener {
+public class Application implements Callable<Integer>, LogReceiveListener {
 
-    private boolean doForward = false;
+    private final List<LogForwardListener> logForwardListeners = new ArrayList<>();
     private SyslogParser syslogParser;
-    private UdpClient udpClient;
-    private UdpClient gelfClient;
-    private LokiClient lokiClient;
 
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].", defaultValue = "514", paramLabel = "<num>")
@@ -83,6 +77,7 @@ public class Application implements Callable<Integer>, LogListener {
     @Override
     public Integer call() throws IOException {
 
+
         if(enableDebug) {
             System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
         }
@@ -95,8 +90,8 @@ public class Application implements Callable<Integer>, LogListener {
 
         if(syslog != null) {
             if(syslog.getScheme().toLowerCase(Locale.ROOT).equals("udp")) {
-                udpClient = new UdpClient(getInetSocketAddress(syslog));
-                doForward = true;
+                UdpClient udpClient = new UdpClient(getInetSocketAddress(syslog));
+                logForwardListeners.add(udpClient);
             } else {
                 throw new UnsupportedOperationException("Forward protocol not implemented: " + syslog.getScheme());
             }
@@ -104,16 +99,18 @@ public class Application implements Callable<Integer>, LogListener {
 
         if(gelf != null) {
             if(gelf.getScheme().toLowerCase(Locale.ROOT).equals("udp")) {
-                gelfClient = new UdpClient(getInetSocketAddress(gelf));
-                doForward = true;
+                GelfClient gelfClient = new GelfClient(getInetSocketAddress(gelf));
+                logForwardListeners.add(gelfClient);
             } else {
                 throw new UnsupportedOperationException("Forward protocol not implemented: " + gelf.getScheme());
             }
         }
 
         if(loki != null) {
-            lokiClient = new LokiClient(loki);
-            doForward = true;
+            LokiClient lokiClient = new LokiClient(loki);
+            logForwardListeners.add(lokiClient);
+            Thread t = new Thread(lokiClient);
+            t.start();
         }
 
         if(udpServer) {
@@ -133,7 +130,7 @@ public class Application implements Callable<Integer>, LogListener {
 
 
     @Override
-    public void onLogEvent(LogEvent event) {
+    public void onLogEvent(LogReceiveEvent event) {
 
         // Parse message
         String message = event.getMessage();
@@ -146,6 +143,10 @@ public class Application implements Callable<Integer>, LogListener {
 
         if(msg != null) {
 
+            if(logForwardListeners.size() > 0) {
+                sendForwardEvent(msg);
+            }
+
             if(stdout) {
                 if(ansiOutput) {
                     System.out.println(SyslogPrinter.toAnsiString(msg));
@@ -154,27 +155,16 @@ public class Application implements Callable<Integer>, LogListener {
                 }
             }
 
-            if(doForward) {
-                try {
-
-                    if(udpClient != null) {
-                        udpClient.send(SyslogPrinter.toRfc5424(msg));
-                    }
-
-                    if(gelfClient != null) {
-                        gelfClient.send(SyslogPrinter.toGelf(msg));
-                    }
-
-                    if(lokiClient != null) {
-                        lokiClient.send(SyslogPrinter.toLoki(msg));
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
 
+    }
+
+
+    private void sendForwardEvent(SyslogMessage message) {
+        LogForwardEvent event = new LogForwardEvent( this, message);
+        for (LogForwardListener listener : logForwardListeners) {
+            listener.onForwardEvent(event);
+        }
     }
 
 
