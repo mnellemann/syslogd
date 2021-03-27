@@ -15,8 +15,8 @@
  */
 package biz.nellemann.syslogd.net;
 
-import biz.nellemann.syslogd.LogEvent;
-import biz.nellemann.syslogd.LogListener;
+import biz.nellemann.syslogd.LogReceiveEvent;
+import biz.nellemann.syslogd.LogReceiveListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,13 +54,17 @@ public class TcpServer {
      * Event Listener Configuration
      */
 
-    protected final List<LogListener> eventListeners = new ArrayList<>();
+    protected final List<LogReceiveListener> eventListeners = new ArrayList<>();
 
-    public synchronized void addEventListener( LogListener l ) {
-        eventListeners.add( l );
+    public synchronized void addEventListener(LogReceiveListener listener ) {
+        eventListeners.add( listener );
     }
 
-    public synchronized void removeEventListener( LogListener l ) {
+    public synchronized void addEventListener(List<LogReceiveListener> listeners ) {
+        eventListeners.addAll(listeners);
+    }
+
+    public synchronized void removeEventListener( LogReceiveListener l ) {
         eventListeners.remove( l );
     }
 
@@ -68,12 +72,12 @@ public class TcpServer {
 
     private static class ClientHandler extends Thread {
 
-        protected final List<LogListener> eventListeners;
+        protected final List<LogReceiveListener> eventListeners;
 
         private final Socket clientSocket;
         private BufferedReader in;
 
-        public ClientHandler(Socket socket, List<LogListener> eventListeners) {
+        public ClientHandler(Socket socket, List<LogReceiveListener> eventListeners) {
             this.clientSocket = socket;
             this.eventListeners = eventListeners;
         }
@@ -101,8 +105,8 @@ public class TcpServer {
 
 
         private synchronized void sendEvent(String message) {
-            LogEvent event = new LogEvent( this, message );
-            for (LogListener eventListener : eventListeners) {
+            LogReceiveEvent event = new LogReceiveEvent( this, message );
+            for (LogReceiveListener eventListener : eventListeners) {
                 eventListener.onLogEvent(event);
             }
         }

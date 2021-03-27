@@ -1,5 +1,5 @@
 /*
-   Copyright 2020 mark.nellemann@gmail.com
+   Copyright 2021 mark.nellemann@gmail.com
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,21 +15,6 @@
  */
 package biz.nellemann.syslogd;
 
-
-import java.util.EventObject;
-
-public class LogEvent extends EventObject {
-
-    private static final long serialVersionUID = 1L;
-    private final String message;
-
-    public LogEvent(final Object source, final String message ) {
-        super( source );
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
+public interface LogForwardListener {
+    public void onForwardEvent(LogForwardEvent event);
 }

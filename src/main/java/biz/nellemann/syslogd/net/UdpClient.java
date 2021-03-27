@@ -15,6 +15,9 @@
  */
 package biz.nellemann.syslogd.net;
 
+import biz.nellemann.syslogd.LogForwardEvent;
+import biz.nellemann.syslogd.LogForwardListener;
+import biz.nellemann.syslogd.SyslogPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +25,7 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 
-public class UdpClient {
+public class UdpClient implements LogForwardListener {
 
     private final static Logger log = LoggerFactory.getLogger(UdpClient.class);
 
@@ -49,4 +52,15 @@ public class UdpClient {
     public void close() {
         socket.close();
     }
+
+
+    @Override
+    public void onForwardEvent(LogForwardEvent event) {
+        try {
+            send(SyslogPrinter.toRfc5424(event.getMessage()));
+        } catch (Exception e) {
+            log.warn("onForwardEvent() error", e);
+        }
+    }
+
 }

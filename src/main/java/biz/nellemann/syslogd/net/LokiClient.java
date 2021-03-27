@@ -15,18 +15,26 @@
  */
 package biz.nellemann.syslogd.net;
 
+import biz.nellemann.syslogd.LogForwardEvent;
+import biz.nellemann.syslogd.LogForwardListener;
+import biz.nellemann.syslogd.SyslogPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ArrayBlockingQueue;
 
-public class LokiClient {
+public class LokiClient implements LogForwardListener, Runnable {
 
     private final static Logger log = LoggerFactory.getLogger(LokiClient.class);
+
+    private final ArrayBlockingQueue<String> blockingQueue = new ArrayBlockingQueue<>(1024);
     private final URL url;
+    private boolean keepRunning = true;
 
 
     public LokiClient(URL url) {
@@ -43,7 +51,7 @@ public class LokiClient {
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");
             con.setConnectTimeout(500);
-            con.setReadTimeout(100);
+            con.setReadTimeout(150);
             con.setDoOutput(true);
 
             byte[] input = msg.getBytes(StandardCharsets.UTF_8);
@@ -54,20 +62,40 @@ public class LokiClient {
             }
 
             int responseCode = con.getResponseCode();
-            if(responseCode != 204) {
-                log.warn("send() - response: " + responseCode);
-                log.debug("send() - msg: " + msg);
+            try (InputStream ignored = con.getInputStream()) {
+                if(responseCode != 204) {
+                    log.warn("send() - response: " + responseCode);
+                }
             }
 
-
         } catch (IOException e) {
-            log.error("send() - " + e.getMessage());
+            log.error("send() - error: " + e.getMessage());
         } finally {
             if(con != null) {
                 con.disconnect();
             }
         }
 
+    }
+
+
+    @Override
+    public void run() {
+
+        while (keepRunning) {
+            try {
+                send(blockingQueue.take());
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
+        }
+
+    }
+
+
+    @Override
+    public void onForwardEvent(LogForwardEvent event) {
+        blockingQueue.offer(SyslogPrinter.toLoki(event.getMessage()));
     }
 
 }
