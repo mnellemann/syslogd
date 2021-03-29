@@ -12,7 +12,7 @@ Network / Firewall must allow UDP (and possible TCP) traffic on port 514 from HM
 To add a remote logging destination, run the following command. Use the filter to discard unwanted messaged.
 
 ```shell
-chhmc -c syslog -t udp -s add -h 10.32.64.1 --input "filter_msg_contains_discard_strings=run-parts,slice,session,leases,renewal,0anacron,Session,DHCPREQUEST,DHCPACK,CMD,CRON"
+chhmc -c syslog -t udp -s add -h 10.32.64.1 --input "filter_msg_contains_discard_strings=run-parts,slice,session,leases,renewal,0anacron,Session,DHCPREQUEST,DHCPACK,CMD,CRON,SCHEDULED"
 ```
 
 In the above example we filter away some messages that we are not interested in forwarding on remotely.
