@@ -1,6 +1,6 @@
 # Syslog Server
 
-All received messages are written to *stdout* and/or forwarded to a remote logging solution.
+All received messages are written to *stdout* and/or forwarded to a remote logging destination.
 
 The syslog server is able to listen on both UDP and TCP and parses syslog messages in either RFC5424 or RFC3164 (BSD) format.
 
@@ -9,9 +9,12 @@ This software is free to use and is licensed under the [Apache 2.0 License](http
 ![architecture](https://bitbucket.org/mnellemann/syslogd/downloads/syslogd.svg)
 
 The default syslog port (514) requires you to run syslogd as root / administrator.
-If you do not wish to do so, you can choose a port number (with the *-p* or *--port* flag) above 1024.
+If you do not wish to do so, you can choose any port number (with the *-p* or *--port* flag) above 1024.
 
-Supported remote logging solutions are Syslog (RFC5424 over UDP), Graylog (GELF over UDP) and Grafana Loki.
+Supported remote logging destinations are:
+- Syslog (RFC5424 over UDP)
+- Graylog (GELF over UDP)
+- and Grafana Loki (HTTP over TCP).
 
 ## Usage Instructions
 
@@ -75,7 +78,7 @@ If you don't want any output locally (only forwarding), you can use the ```--no-
 ### IBM AIX and VIO Servers
 
 Syslog messages from AIX (and IBM Power Virtual I/O Servers) can be troublesome with some logging solutions. These can be received with
-syslogd and then forwarded on to your preferred logging solution.
+*syslogd* and then forwarded on to your preferred logging solution.
 
 ### Forwarding to Grafana Loki
 
