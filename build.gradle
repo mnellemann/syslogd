@@ -2,28 +2,28 @@ plugins {
     id 'java'
     id 'groovy'
     id 'application'
-    id "com.github.johnrengelman.shadow" version "6.1.0"
-    id "net.nemerosa.versioning" version "2.14.0"
-    id "nebula.ospackage" version "8.5.2"
+    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id "net.nemerosa.versioning" version "2.15.1"
+    id "nebula.ospackage" version "9.0.0"
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-    annotationProcessor 'info.picocli:picocli-codegen:4.6.1'
-    implementation 'info.picocli:picocli:4.6.1'
-    implementation 'org.slf4j:slf4j-api:1.7.30'
-    implementation 'org.slf4j:slf4j-simple:1.7.30'
+    annotationProcessor 'info.picocli:picocli-codegen:4.6.2'
+    implementation 'info.picocli:picocli:4.6.2'
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'org.slf4j:slf4j-simple:1.7.32'
 
-    testImplementation('org.spockframework:spock-core:2.0-M4-groovy-3.0')
-    testImplementation 'org.slf4j:slf4j-api:1.7.30'
-    testRuntime("org.slf4j:slf4j-simple:1.7.30")
+    testImplementation('org.spockframework:spock-core:2.0-groovy-3.0')
+    testImplementation 'org.slf4j:slf4j-api:1.7.32'
+    testRuntimeOnly("org.slf4j:slf4j-simple:1.7.32")
 }
 
 application {
-    mainClassName = 'biz.nellemann.syslogd.Application'
+    getMainClass().set('biz.nellemann.syslogd.Application')
 }
 
 test {
