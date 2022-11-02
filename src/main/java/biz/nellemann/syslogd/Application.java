@@ -20,7 +20,6 @@ import biz.nellemann.syslogd.net.*;
 import biz.nellemann.syslogd.parser.SyslogParser;
 import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
 import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
-import org.slf4j.impl.SimpleLogger;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -79,7 +78,7 @@ public class Application implements Callable<Integer>, LogReceiveListener {
 
 
         if(enableDebug) {
-            System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         }
 
         if(rfc5424) {

@@ -15,9 +15,6 @@
  */
 package biz.nellemann.syslogd;
 
-
-import biz.nellemann.syslogd.msg.SyslogMessage;
-
 import java.util.EventObject;
 
 public class LogReceiveEvent extends EventObject {

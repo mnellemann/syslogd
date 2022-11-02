@@ -16,15 +16,9 @@
 package biz.nellemann.syslogd.parser;
 
 import biz.nellemann.syslogd.msg.SyslogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.Instant;
 
 public abstract class SyslogParser {
-
-    private final static Logger log = LoggerFactory.getLogger(SyslogParser.class);
-
 
     public abstract SyslogMessage parse(final String input);
 
@@ -38,11 +32,8 @@ public abstract class SyslogParser {
      * @return
      */
     public int getFacility(String pri) {
-
         int priority = Integer.parseInt(pri);
         int facility = priority >> 3;
-
-        //log.debug("getFacility() - " + pri + " => " + facility);
         return facility;
     }
 
@@ -54,13 +45,9 @@ public abstract class SyslogParser {
      * @return
      */
     public int getSeverity(String pri) {
-
         int priority = Integer.parseInt(pri);
         int severity = priority & 0x07;
-
-        //log.debug("getSeverity() - " + pri + " => " + severity);
         return severity;
     }
-
 
 }
