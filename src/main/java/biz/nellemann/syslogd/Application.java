@@ -168,8 +168,7 @@ public class Application implements Callable<Integer>, LogReceiveListener {
 
 
     private InetSocketAddress getInetSocketAddress(URI input) {
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(input.getHost(), input.getPort());
-        return inetSocketAddress;
+        return new InetSocketAddress(input.getHost(), input.getPort());
     }
 
 

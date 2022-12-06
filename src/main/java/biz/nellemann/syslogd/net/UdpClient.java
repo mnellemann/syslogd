@@ -29,8 +29,8 @@ public class UdpClient implements LogForwardListener {
 
     private final static Logger log = LoggerFactory.getLogger(UdpClient.class);
 
-    private InetSocketAddress inetSocketAddress;
-    private DatagramSocket socket;
+    private final InetSocketAddress inetSocketAddress;
+    private final DatagramSocket socket;
 
    public UdpClient(InetSocketAddress inetSocketAddress) throws SocketException {
         this.inetSocketAddress = inetSocketAddress;
@@ -40,12 +40,10 @@ public class UdpClient implements LogForwardListener {
     public void send(String msg) {
         byte[] buf = msg.getBytes(StandardCharsets.US_ASCII);
         DatagramPacket packet = new DatagramPacket(buf, buf.length, inetSocketAddress.getAddress(), inetSocketAddress.getPort());
-        if(this.socket != null) {
-            try {
-                socket.send(packet);
-            } catch (IOException e) {
-                log.error("send() - Could not send packet: " + e.getMessage());
-            }
+        try {
+            socket.send(packet);
+        } catch (IOException e) {
+            log.error("send() - Could not send packet: " + e.getMessage());
         }
     }
 

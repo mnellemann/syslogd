@@ -133,7 +133,7 @@ public class SyslogPrinter {
         sb.append(String.format(" \"level\": \"%s\",", msg.severity));
         sb.append(String.format(" \"application\": \"%s\"", msg.application));
         sb.append("}, \"values\": [ ");
-        sb.append(String.format("[ \"%d\", \"%s\" ]", msg.timestamp.getEpochSecond() * 1000000000l, getMessageLine(msg)));
+        sb.append(String.format("[ \"%d\", \"%s\" ]", msg.timestamp.getEpochSecond() * 1000000000L, getMessageLine(msg)));
         sb.append(" ] } ] }");
         log.debug(sb.toString());
         return sb.toString();
