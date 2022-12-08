@@ -59,19 +59,19 @@ or, if installed as a *deb* or *rpm* package:
 Forwarding messages on to another log-system on a non-standard port.
 
 ```
-java -jar /path/to/syslogd-x.y.z-all.jar --syslog udp://remotehost:514
+java -jar /path/to/syslogd-x.y.z-all.jar --to-syslog udp://remotehost:514
 ```
 
 Forwarding messages to a Graylog server in GELF format.
 
 ```
-java -jar /path/to/syslogd-x.y.z-all.jar --gelf udp://remotehost:12201
+java -jar /path/to/syslogd-x.y.z-all.jar --to-gelf udp://remotehost:12201
 ```
 
 Forwarding to a Grafana Loki server.
 
 ```
-java -jar /path/to/syslogd-x.y.z-all.jar --loki http://remotehost:3100
+java -jar /path/to/syslogd-x.y.z-all.jar --to-loki http://remotehost:3100
 ```
 
 If you don't want any output locally (only forwarding), you can use the ```--no-stdout``` flag.
