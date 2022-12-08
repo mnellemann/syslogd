@@ -17,6 +17,7 @@ package biz.nellemann.syslogd;
 
 import biz.nellemann.syslogd.msg.SyslogMessage;
 import biz.nellemann.syslogd.net.*;
+import biz.nellemann.syslogd.parser.GelfParser;
 import biz.nellemann.syslogd.parser.SyslogParser;
 import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
 import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
@@ -42,7 +43,7 @@ public class Application implements Callable<Integer>, LogReceiveListener {
     private SyslogParser syslogParser;
 
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 514].", defaultValue = "514", paramLabel = "<num>")
+    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 1514].", defaultValue = "1514", paramLabel = "<num>")
     private int port;
 
     @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true].", defaultValue = "true")
@@ -51,22 +52,22 @@ public class Application implements Callable<Integer>, LogReceiveListener {
     @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: true].", defaultValue = "true")
     private boolean tcpServer;
 
-    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output ANSI colors [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output in ANSI colors [default: true].", defaultValue = "true")
     private boolean ansiOutput;
 
     @CommandLine.Option(names = "--no-stdout", negatable = true, description = "Output messages to stdout [default: true].", defaultValue = "true")
     private boolean stdout;
 
-    @CommandLine.Option(names = "--rfc5424", description = "Parse RFC-5424 messages [default: RFC-3164].", defaultValue = "false")
-    private boolean rfc5424;
+    @CommandLine.Option(names = {"-f", "--format"}, description = "Input format: RFC-5424, RFC-3164 or GELF [default: RFC-3164].", defaultValue = "RFC-3164")
+    private String protocol;
 
-    @CommandLine.Option(names = { "-s", "--syslog"}, description = "Forward to Syslog <udp://host:port> (RFC-5424).", paramLabel = "<uri>")
+    @CommandLine.Option(names = { "--to-syslog"}, description = "Forward to Syslog <udp://host:port> (RFC-5424).", paramLabel = "<uri>")
     private URI syslog;
 
-    @CommandLine.Option(names = { "-g", "--gelf"}, description = "Forward to Graylog <udp://host:port>.", paramLabel = "<uri>")
+    @CommandLine.Option(names = { "--to-gelf"}, description = "Forward to Graylog <udp://host:port>.", paramLabel = "<uri>")
     private URI gelf;
 
-    @CommandLine.Option(names = { "-l", "--loki"}, description = "Forward to Grafana Loki <http://host:port>.", paramLabel = "<url>")
+    @CommandLine.Option(names = { "--to-loki"}, description = "Forward to Grafana Loki <http://host:port>.", paramLabel = "<url>")
     private URL loki;
 
     @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: 'false'].")
@@ -81,7 +82,9 @@ public class Application implements Callable<Integer>, LogReceiveListener {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         }
 
-        if(rfc5424) {
+        if(protocol.equalsIgnoreCase("GELF"))
+            syslogParser = new GelfParser();
+        else if (protocol.equalsIgnoreCase("RFC-5424")) {
             syslogParser = new SyslogParserRfc5424();
         } else {
             syslogParser = new SyslogParserRfc3164();
@@ -132,10 +135,9 @@ public class Application implements Callable<Integer>, LogReceiveListener {
     public void onLogEvent(LogReceiveEvent event) {
 
         // Parse message
-        String message = event.getMessage();
         SyslogMessage msg = null;
         try {
-            msg = syslogParser.parse(message);
+            msg = syslogParser.parse(event.getBytes());
         } catch(Exception e) {
             e.printStackTrace();
         }

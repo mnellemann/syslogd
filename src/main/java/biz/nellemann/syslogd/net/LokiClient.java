@@ -34,7 +34,6 @@ public class LokiClient implements LogForwardListener, Runnable {
 
     private final ArrayBlockingQueue<String> blockingQueue = new ArrayBlockingQueue<>(1024);
     private final URL url;
-    private boolean keepRunning = true;
 
 
     public LokiClient(URL url) {
@@ -82,7 +81,7 @@ public class LokiClient implements LogForwardListener, Runnable {
     @Override
     public void run() {
 
-        while (keepRunning) {
+        while (true) {
             try {
                 send(blockingQueue.take());
             } catch (Exception e) {

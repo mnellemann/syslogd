@@ -15,38 +15,55 @@
  */
 package biz.nellemann.syslogd.msg;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.Instant;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SyslogMessage {
 
-    public Facility facility;
-    public Severity severity;
+    @JsonIgnore
+    public Facility facility = Facility.user;
+
+    @JsonProperty("level")
+    public Severity severity = Severity.info;
 
     // The VERSION field denotes the version of the syslog protocol specification.
-    public Integer version;
+    public String version;
 
     // The TIMESTAMP field is a formalized timestamp derived from [RFC3339].
+    @JsonProperty("timestamp")  // 1670357783.694 - in GELF: seconds since UNIX epoch with optional decimal places for milliseconds
     public Instant timestamp;
 
     // The HOSTNAME field identifies the machine that originally sent the syslog message.
+    @JsonProperty("host")
     public String hostname;
 
     // The APP-NAME field SHOULD identify the device or application that originated the message.
+    @JsonProperty("_logger_name")
     public String application;
 
     // The PROCID field is often used to provide the process name or process ID associated with a syslog system.
+    @JsonProperty("_thread_name")
     public String processId;
 
     // The MSGID SHOULD identify the type of message.
+    @JsonIgnore
     public String messageId;
 
     // STRUCTURED-DATA provides a mechanism to express information in a well defined, easily parseable and interpretable data format.
+    @JsonProperty("full_message")
     public String structuredData;
 
     // The MSG part contains a free-form message that provides information about the event.
-    public final String message;
+    @JsonProperty("short_message")
+    public String message;
 
-    public SyslogMessage(final String message) {
+    @JsonCreator
+    public SyslogMessage(@JsonProperty("short_message") final String message) {
         this.message = message;
     }
 

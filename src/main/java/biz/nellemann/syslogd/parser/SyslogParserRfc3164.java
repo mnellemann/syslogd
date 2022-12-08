@@ -15,6 +15,7 @@
  */
 package biz.nellemann.syslogd.parser;
 
+import biz.nellemann.syslogd.LogReceiveEvent;
 import biz.nellemann.syslogd.msg.Facility;
 import biz.nellemann.syslogd.msg.Severity;
 import biz.nellemann.syslogd.msg.SyslogMessage;
@@ -75,6 +76,11 @@ public class SyslogParserRfc3164 extends SyslogParser {
         syslogMessage.application = application;
 
         return syslogMessage;
+    }
+
+    @Override
+    public SyslogMessage parse(byte[] input) {
+        return parse(byteArrayToString(input));
     }
 
 

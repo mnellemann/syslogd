@@ -15,6 +15,7 @@
  */
 package biz.nellemann.syslogd.parser;
 
+import biz.nellemann.syslogd.LogReceiveEvent;
 import biz.nellemann.syslogd.msg.Severity;
 import biz.nellemann.syslogd.msg.Facility;
 import biz.nellemann.syslogd.msg.SyslogMessage;
@@ -71,7 +72,7 @@ public class SyslogParserRfc5424 extends SyslogParser {
         SyslogMessage syslogMessage = new SyslogMessage(msg.trim());
         syslogMessage.facility = Facility.getByNumber(facility);
         syslogMessage.severity = Severity.getByNumber(severity);
-        syslogMessage.version = Integer.parseInt(ver);
+        syslogMessage.version = ver;
         syslogMessage.timestamp = parseTimestamp(date);
         syslogMessage.hostname = host;
         if(app != null && !app.equals("-"))
@@ -84,6 +85,11 @@ public class SyslogParserRfc5424 extends SyslogParser {
             syslogMessage.structuredData = data;
 
         return syslogMessage;
+    }
+
+    @Override
+    public SyslogMessage parse(byte[] input) {
+        return parse(byteArrayToString(input));
     }
 
 
