@@ -1,64 +1,68 @@
-# Syslog Server
+# Syslog Director
 
-All received messages are written to *stdout* and/or forwarded to a remote logging destination.
+All received messages are written to *stdout* and/or forwarded to remote logging destinations.
 
-The syslog server is able to listen on both UDP and TCP and parses syslog messages in either RFC5424 or RFC3164 (BSD) format.
+![architecture](doc/syslogd.png)
 
-This software is free to use and is licensed under the [Apache 2.0 License](https://bitbucket.org/mnellemann/syslogd/src/master/LICENSE).
-
-![architecture](https://bitbucket.org/mnellemann/syslogd/downloads/syslogd.svg)
-
-The default syslog port (514) requires you to run syslogd as root / administrator.
-If you do not wish to do so, you can choose any port number (with the *-p* or *--port* flag) above 1024.
+Supported incoming message formats are:
+- RFC5424 UDP and TCP
+- RFC3164 (BSD) UDP and TCP
+- GELF format UDP and TCP (also compressed on UDP)
 
 Supported remote logging destinations are:
 - Syslog (RFC5424 over UDP)
 - Graylog (GELF over UDP)
 - and Grafana Loki (HTTP over TCP).
 
+This software is free to use and is licensed under the [Apache 2.0 License](https://bitbucket.org/mnellemann/syslogd/src/master/LICENSE).
+
 ## Usage Instructions
 
 - Install the syslogd package (*.deb* or *.rpm*) from [downloads](https://bitbucket.org/mnellemann/syslogd/downloads/) or build from source.
-- Run *bin/syslogd*, use the *-h* option for help :)
 
 ```text
 Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdout] [--[no-]tcp] [--[no-]udp]
-               [--rfc5424] [-g=<uri>] [-l=<url>] [-p=<num>] [-s=<uri>]
-  -d, --debug          Enable debugging [default: 'false'].
-  -g, --gelf=<uri>     Forward to Graylog <udp://host:port>.
-  -h, --help           Show this help message and exit.
-  -l, --loki=<url>     Forward to Grafana Loki <http://host:port>.
-      --[no-]ansi      Output ANSI colors [default: true].
-      --[no-]stdout    Output messages to stdout [default: true].
-      --[no-]tcp       Listen on TCP [default: true].
-      --[no-]udp       Listen on UDP [default: true].
-  -p, --port=<num>     Listening port [default: 514].
-      --rfc5424        Parse RFC-5424 messages [default: RFC-3164].
-  -s, --syslog=<uri>   Forward to Syslog <udp://host:port> (RFC-5424).
-  -V, --version        Print version information and exit.
+               [-f=<protocol>] [-p=<num>] [--to-gelf=<uri>] [--to-loki=<url>]
+               [--to-syslog=<uri>]
+  -d, --debug               Enable debugging [default: 'false'].
+  -f, --format=<protocol>   Input format: RFC-5424, RFC-3164 or GELF [default:
+                              RFC-3164].
+  -h, --help                Show this help message and exit.
+      --[no-]ansi           Output in ANSI colors [default: true].
+      --[no-]stdout         Output messages to stdout [default: true].
+      --[no-]tcp            Listen on TCP [default: true].
+      --[no-]udp            Listen on UDP [default: true].
+  -p, --port=<num>          Listening port [default: 1514].
+      --to-gelf=<uri>       Forward to Graylog <udp://host:port>.
+      --to-loki=<url>       Forward to Grafana Loki <http://host:port>.
+      --to-syslog=<uri>     Forward to Syslog <udp://host:port> (RFC-5424).
+  -V, --version             Print version information and exit.
 ```
+
+The default syslog port (514) requires you to run syslogd as root / administrator.
+Any port number above 1024 does not require privileges and can be selected with the *-p* or *--port* option.
 
 ### Examples
 
-Listening on a non-standard syslog port:
+Listening on the default syslog port:
 
 ```
-java -jar /path/to/syslogd-x.y.z-all.jar --port 1514
+java -jar /path/to/syslogd-x.y.z-all.jar --port 514
 ```
 
 or, if installed as a *deb* or *rpm* package:
 
 ```
-/opt/syslogd/bin/syslogd --port 1514
+/opt/syslogd/bin/syslogd --port 514
 ```
 
-Listening on the standard syslog port (requires root privileges) and forwarding messages on to another log-system on a non-standard port.
+Forwarding messages on to another log-system on a non-standard port.
 
 ```
 java -jar /path/to/syslogd-x.y.z-all.jar --syslog udp://remotehost:514
 ```
 
-Forwarding to a Graylog server in GELF format.
+Forwarding messages to a Graylog server in GELF format.
 
 ```
 java -jar /path/to/syslogd-x.y.z-all.jar --gelf udp://remotehost:12201

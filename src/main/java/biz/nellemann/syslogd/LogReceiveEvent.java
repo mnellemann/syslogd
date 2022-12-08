@@ -15,20 +15,34 @@
  */
 package biz.nellemann.syslogd;
 
+import java.net.DatagramPacket;
+import java.nio.charset.StandardCharsets;
 import java.util.EventObject;
 
 public class LogReceiveEvent extends EventObject {
 
     private static final long serialVersionUID = 1L;
-    private final String message;
+    //private final String message;
+    private final DatagramPacket packet;
 
+    /*
     public LogReceiveEvent(final Object source, final String message ) {
         super( source );
         this.message = message;
     }
+    */
 
-    public String getMessage() {
-        return message;
+    public LogReceiveEvent(final Object source, final DatagramPacket packet) {
+        super( source );
+        this.packet = packet;
+    }
+
+    public String getText() {
+        return new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8);
+    }
+
+    public byte[] getBytes() {
+        return packet.getData();
     }
 
 }

@@ -21,8 +21,10 @@ import biz.nellemann.syslogd.LogReceiveListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.DatagramPacket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -30,10 +32,6 @@ public class TcpServer {
 
     private final int port;
     private ServerSocket serverSocket;
-
-    public TcpServer() {
-        this(514);
-    }
 
     public TcpServer(int port) {
         this.port = port;
@@ -84,6 +82,8 @@ public class TcpServer {
 
         public void run() {
 
+            // GELF TCP does not support compression due to the use of the null byte (\0) as frame delimiter.
+            // Is \0 also used as frame delimiter for regular syslog messages ?
             try {
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String inputLine;
@@ -105,7 +105,8 @@ public class TcpServer {
 
 
         private synchronized void sendEvent(String message) {
-            LogReceiveEvent event = new LogReceiveEvent( this, message );
+            DatagramPacket packet = new DatagramPacket(message.getBytes(StandardCharsets.UTF_8), message.length());
+            LogReceiveEvent event = new LogReceiveEvent( this, packet);
             for (LogReceiveListener eventListener : eventListeners) {
                 eventListener.onLogEvent(event);
             }

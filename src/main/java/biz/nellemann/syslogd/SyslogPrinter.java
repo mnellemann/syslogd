@@ -106,7 +106,7 @@ public class SyslogPrinter {
         StringBuilder sb = new StringBuilder("{ \"version\": \"1.1\",");
         sb.append(String.format("\"host\": \"%s\",", msg.hostname));
         sb.append(String.format("\"short_message\": \"%s\",", JsonUtil.encode(msg.message)));
-        //sb.append(String.format("\"full_message\": \"%s\",", msg.message));
+        sb.append(String.format("\"full_message\": \"%s\",", msg.structuredData));
         sb.append(String.format("\"timestamp\": %d,", msg.timestamp.getEpochSecond()));
         sb.append(String.format("\"level\": %d,", msg.severity.toNumber()));
         sb.append(String.format("\"_facility\": \"%s\",", msg.facility));

@@ -30,24 +30,20 @@ public class UdpServer extends Thread {
     protected DatagramSocket socket;
     protected boolean listen = true;
 
-    public UdpServer() throws IOException {
-        this(514);
-    }
-
     public UdpServer(int port) throws IOException {
         socket = new DatagramSocket(port);
     }
 
     public void run() {
 
-        byte[] buf = new byte[4096];
+        byte[] buf = new byte[8192];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
         while (listen) {
             try {
                 socket.receive(packet);
-                String packetData = new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8);
-                sendEvent(packetData);
+                //String packetData = new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8);
+                sendEvent(packet);
             } catch (Exception e) {
                 e.printStackTrace();
                 listen = false;
@@ -56,13 +52,21 @@ public class UdpServer extends Thread {
         socket.close();
     }
 
+    /*
     private synchronized void sendEvent(String message) {
         LogReceiveEvent event = new LogReceiveEvent( this, message);
         for (LogReceiveListener eventListener : eventListeners) {
             eventListener.onLogEvent(event);
         }
     }
+     */
 
+    private synchronized void sendEvent(DatagramPacket packet) {
+        LogReceiveEvent event = new LogReceiveEvent( this, packet);
+        for (LogReceiveListener eventListener : eventListeners) {
+            eventListener.onLogEvent(event);
+        }
+    }
 
     /**
      * Event Listener Configuration
