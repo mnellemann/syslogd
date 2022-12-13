@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.zip.DataFormatException;
 
 public class GelfParser extends SyslogParser {
@@ -54,18 +55,38 @@ public class GelfParser extends SyslogParser {
 
     @Override
     public SyslogMessage parse(byte[] input) {
-        String text = null;
-        if(input[0] == (byte)0x78 && input[1] == (byte)0x9c) {  // Compressed data - TODO: better detection ?
-            try {
-                text = decompress(input);
-            } catch (DataFormatException | UnsupportedEncodingException e) {
-                log.error("parse() - error: {}", e.getMessage());
-            }
-        } else {
-            text = byteArrayToString(input);
+
+        if(input.length < 8) return null;   // TODO: Find proper minimum input length ?
+        String text;
+
+        // GELF Magic Bytes: 0x1e 0x0f
+        if(input[0] == (byte)0x1e && input[1] == (byte)0x0f) {
+            /*
+                Message ID - 8 bytes: Must be the same for every chunk of this message.
+                    Identifies the whole message and is used to reassemble the chunks later.
+                    Generate from millisecond timestamp + hostname, for example.
+                Sequence number - 1 byte: The sequence number of this chunk starts at 0 and is always less than the sequence count.
+                Sequence count - 1 byte: Total number of chunks this message has.
+
+                All chunks MUST arrive within 5 seconds or the server will discard all chunks that have arrived or are in the process of arriving. A message MUST NOT consist of more than 128 chunks.
+             */
+            log.warn("parse() - Found Magic Bytes, can't parse yet.");
+            byte[] newInput = Arrays.copyOfRange(input, 12, input.length);
+            //return parse(byteArrayToString(newInput));
+            return null;
         }
 
-        return parse(text);
+        // Compressed data: 0x78 0x9c
+        if(input[0] == (byte)0x78 && input[1] == (byte)0x9c) {  // TODO: better detection ?
+            try {
+                return parse(decompress(input));
+            } catch (DataFormatException | UnsupportedEncodingException e) {
+                log.error("parse() - error: {}", e.getMessage());
+                return null;
+            }
+        }
+
+        return parse(byteArrayToString(input));
     }
 
 
