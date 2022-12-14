@@ -5,9 +5,9 @@ All received messages are written to *stdout* and/or forwarded to remote logging
 ![architecture](doc/syslogd.png)
 
 Supported incoming message formats are:
-- RFC5424 UDP and TCP
-- RFC3164 (BSD) UDP and TCP
-- GELF format UDP and TCP (also compressed on UDP)
+- RFC5424 - UDP and TCP
+- RFC3164 (BSD) - UDP and TCP
+- GELF format - TCP and UDP (also compressed & chunked)
 
 Supported remote logging destinations are:
 - Syslog (RFC5424 over UDP)
