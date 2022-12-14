@@ -16,6 +16,8 @@
 package biz.nellemann.syslogd.parser;
 
 import biz.nellemann.syslogd.msg.SyslogMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +26,8 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 public abstract class SyslogParser {
+
+    private final static Logger log = LoggerFactory.getLogger(SyslogParser.class);
 
     public abstract SyslogMessage parse(final String input);
     public abstract SyslogMessage parse(final byte[] input);
@@ -62,17 +66,24 @@ public abstract class SyslogParser {
     }
 
 
-    protected String decompress(byte[] data) throws UnsupportedEncodingException, DataFormatException {
+    protected byte[] decompress(byte[] data) {
 
-        // Decompress the bytes
-        Inflater decompressor = new Inflater();
-        decompressor.setInput(data, 0, data.length);
         byte[] result = new byte[data.length * 2];
-        int resultLength = decompressor.inflate(result);
-        decompressor.end();
+        try {
+            // Decompress the bytes
+            Inflater decompressor = new Inflater();
+            decompressor.setInput(data, 0, data.length);
+            //byte[] result = new byte[data.length * 2];
+            int resultLength = decompressor.inflate(result);
+            decompressor.end();
 
-        // Decode the bytes into a String
-        return new String(result, 0, resultLength, StandardCharsets.UTF_8);
+            // Decode the bytes into a String
+            //uncompressed = new String(result, 0, resultLength, StandardCharsets.UTF_8);
+        } catch (DataFormatException e) {
+            log.error("decompress() - error: {}", e.getMessage());
+        }
 
+        return result;
     }
+
 }

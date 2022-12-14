@@ -17,6 +17,7 @@ package biz.nellemann.syslogd;
 
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.EventObject;
 
 public class LogReceiveEvent extends EventObject {
@@ -42,7 +43,7 @@ public class LogReceiveEvent extends EventObject {
     }
 
     public byte[] getBytes() {
-        return packet.getData();
+        return Arrays.copyOfRange(packet.getData(), packet.getOffset(), packet.getLength());
     }
 
 }

@@ -39,4 +39,14 @@ class JsonUtilTest extends Specification {
         result == 'here it comes " to wreck the day...'
     }
 
+    def "test newline decode"() {
+        setup:
+        def testQuote = 'here it comes \n to wreck the day...'
+
+        when:
+        def result = JsonUtil.decode(testQuote)
+
+        then:
+        result == 'here it comes \n to wreck the day...'
+    }
 }
