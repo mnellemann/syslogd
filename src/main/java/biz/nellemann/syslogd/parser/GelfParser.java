@@ -9,8 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Arrays;
+import java.util.TreeMap;
 
+/*
+    For more information about the GELF format, visit:  https://go2docs.graylog.org/5-0/getting_in_log_data/gelf.html
+ */
 public class GelfParser extends SyslogParser {
 
     private final static Logger log = LoggerFactory.getLogger(GelfParser.class);
@@ -35,7 +39,8 @@ public class GelfParser extends SyslogParser {
         Sequence number - 1 byte: The sequence number of this chunk starts at 0 and is always less than the sequence count.
         Sequence count - 1 byte: Total number of chunks this message has.
 
-        All chunks MUST arrive within 5 seconds or the server will discard all chunks that have arrived or are in the process of arriving. A message MUST NOT consist of more than 128 chunks.
+        All chunks MUST arrive within 5 seconds or the server will discard all chunks that have arrived or are in the process of arriving.
+        A message MUST NOT consist of more than 128 chunks.
     */
     private SyslogMessage parseChunked(byte[] input) {
 
@@ -62,7 +67,7 @@ public class GelfParser extends SyslogParser {
         integerTreeMap.put((int)seqNumber, payload);
         expiringMap.put(id, integerTreeMap);
 
-        if(seqNumber+1 >= seqTotal) {
+        if(integerTreeMap.size() >= seqTotal) {
             StringBuilder sb = new StringBuilder();
             integerTreeMap.forEach( (i, p) -> {
                 sb.append(byteArrayToString(p));
@@ -87,8 +92,6 @@ public class GelfParser extends SyslogParser {
 
 
     /*
-        https://go2docs.graylog.org/5-0/getting_in_log_data/gelf.html
-
         zlib signatures at offset 0
         78 01 : No Compression (no preset dictionary)
         78 5E : Best speed (no preset dictionary)
@@ -105,15 +108,6 @@ public class GelfParser extends SyslogParser {
 
     @Override
     public SyslogMessage parse(byte[] input) {
-
-
-        for(byte b : input) {
-            if(b > 0x0) {
-                System.out.printf("%d, ", (b & 0xff));
-            }
-        }
-        System.out.println();
-
 
         if(input.length < 8) return null;   // TODO: Find proper minimum input length ?
 
