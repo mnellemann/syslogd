@@ -91,14 +91,14 @@ public class TcpServer {
                     sendEvent(inputLine);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.printf("TcpServer - error: %s\n", e.getMessage());
             }
 
             try {
                 in.close();
                 clientSocket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.printf("TcpServer - error: %s\n", e.getMessage());
             }
 
         }

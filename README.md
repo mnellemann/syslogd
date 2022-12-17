@@ -2,19 +2,25 @@
 
 All received messages are written to *stdout* and/or forwarded to remote logging destinations.
 
-![architecture](doc/syslogd.png)
-
 Supported incoming message formats are:
-- RFC5424 - UDP and TCP
-- RFC3164 (BSD) - UDP and TCP
-- GELF format - TCP and UDP (also compressed & chunked)
+- Syslog RFC5424 - TCP and UDP
+- Syslog RFC3164 (BSD) - TCP and UDP
+- Graylog GELF - TCP and UDP (compressed & chunked)
 
 Supported remote logging destinations are:
 - Syslog (RFC5424 over UDP)
 - Graylog (GELF over UDP)
-- and Grafana Loki (HTTP over TCP).
+- Grafana Loki (HTTP over TCP).
 
-This software is free to use and is licensed under the [Apache 2.0 License](https://bitbucket.org/mnellemann/syslogd/src/master/LICENSE).
+This software is free to use and is licensed under the [Apache 2.0 License](LICENSE).
+
+![architecture](doc/syslogd.png)
+
+Some of my other related projects are:
+
+- [hmci](https://bitbucket.org/mnellemann/hmci) for agent-less monitoring of IBM Power servers
+- [svci](https://bitbucket.org/mnellemann/svci) for monitoring IBM Spectrum Virtualize (Flashsystems / Storwize / SVC)
+- [sysmon](https://bitbucket.org/mnellemann/sysmon) for monitoring all types of servers with a small Java agent
 
 ## Usage Instructions
 
