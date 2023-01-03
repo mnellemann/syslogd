@@ -3,9 +3,9 @@ plugins {
     id 'groovy'
     id 'application'
     id 'jacoco'
-    id "com.github.johnrengelman.shadow" version "7.1.2"
     id "net.nemerosa.versioning" version "2.15.1"
-    id "nebula.ospackage" version "9.1.1"
+    id "com.netflix.nebula.ospackage" version "10.0.0"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 repositories {
@@ -71,8 +71,6 @@ jacocoTestCoverageVerification {
 }
 check.dependsOn jacocoTestCoverageVerification
 
-
-apply plugin: 'nebula.ospackage'
 ospackage {
     packageName = 'syslogd'
     release = '1'

@@ -15,7 +15,6 @@
  */
 package biz.nellemann.syslogd.parser;
 
-import biz.nellemann.syslogd.LogReceiveEvent;
 import biz.nellemann.syslogd.msg.Facility;
 import biz.nellemann.syslogd.msg.Severity;
 import biz.nellemann.syslogd.msg.SyslogMessage;

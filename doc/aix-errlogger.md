@@ -8,7 +8,7 @@ More information about the AIX errlogger is available on the IBM [knowledge cent
 
 ### Prepare the local syslog service
 
-Configure the local syslog service to forward messages to our remote [syslogd](https://bitbucket.org/mnellemann/syslogd/) service.
+Configure the local syslog service to forward messages to our remote [syslogd](https://git.data.coop/nellemann/syslogd/) service.
 
 Create an empty local log file:
 
