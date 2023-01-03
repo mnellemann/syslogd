@@ -1,0 +1,23 @@
+---
+kind: pipeline
+name: default
+type: docker
+
+steps:
+- name: build
+  image: eclipse-temurin:8-jdk
+  commands:
+  - ./gradlew build
+- name: publish
+  image: eclipse-temurin:8-jdk
+  environment:
+    AUTH_TOKEN:
+      from_secret: auth # gitea_username:gitea_token
+  commands:
+  - ./gradlew packages
+  - for file in build/libs/*-all.jar ; do curl --user "$${AUTH_TOKEN}" --upload-file "$${file}" "https://git.data.coop/api/packages/${DRONE_REPO_OWNER}/generic/${DRONE_REPO_NAME}/${DRONE_TAG}/$(basename $file)" ; done
+  - for file in build/distributions/*.deb ; do curl --user "$${AUTH_TOKEN}" --upload-file "$${file}" "https://git.data.coop/api/packages/${DRONE_REPO_OWNER}/generic/${DRONE_REPO_NAME}/${DRONE_TAG}/$(basename $file)" ; done
+  - for file in build/distributions/*.rpm ; do curl --user "$${AUTH_TOKEN}" --upload-file "$${file}" "https://git.data.coop/api/packages/${DRONE_REPO_OWNER}/generic/${DRONE_REPO_NAME}/${DRONE_TAG}/$(basename $file)" ; done
+  when:
+    event:
+    - tag
