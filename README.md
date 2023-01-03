@@ -24,7 +24,7 @@ Some of my other related projects are:
 
 ## Usage Instructions
 
-- Install the syslogd package (*.deb* or *.rpm*) from [downloads](https://bitbucket.org/mnellemann/syslogd/downloads/) or build from source.
+- Install the syslogd package (*.deb* or *.rpm*) from [packages](https://git.data.coop/nellemann/-/packages/generic/syslogd/) or build from source.
 
 ```text
 Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdout] [--[no-]tcp] [--[no-]udp]
