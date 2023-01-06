@@ -18,9 +18,9 @@ This software is free to use and is licensed under the [Apache 2.0 License](LICE
 
 Some of my other related projects are:
 
-- [hmci](https://bitbucket.org/mnellemann/hmci) for agent-less monitoring of IBM Power servers
-- [svci](https://bitbucket.org/mnellemann/svci) for monitoring IBM Spectrum Virtualize (Flashsystems / Storwize / SVC)
-- [sysmon](https://bitbucket.org/mnellemann/sysmon) for monitoring all types of servers with a small Java agent
+- [hmci](https://git.data.coop/nellemann/hmci) for agent-less monitoring of IBM Power servers
+- [svci](https://git.data.coop/nellemann/svci) for monitoring IBM Spectrum Virtualize (Flashsystems / Storwize / SVC)
+- [sysmon](https://git.data.coop/nellemann/sysmon) for monitoring all types of servers with a small Java agent
 
 ## Usage Instructions
 
