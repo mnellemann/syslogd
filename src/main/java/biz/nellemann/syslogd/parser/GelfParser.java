@@ -81,11 +81,12 @@ public class GelfParser extends SyslogParser {
 
     @Override
     public SyslogMessage parse(String input) {
+        if(!input.startsWith("{")) return null; // Avoid trying to parse non-JSON content
         SyslogMessage message = null;
         try {
             message = objectMapper.readValue(input, SyslogMessage.class);
         } catch (JsonProcessingException e) {
-            log.warn("parse() - error: {}", e.getMessage());
+            log.debug("parse() - error: {}", e.getMessage());
         }
         return message;
     }

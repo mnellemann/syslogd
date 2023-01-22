@@ -103,18 +103,18 @@ public class SyslogPrinter {
      * @return
      */
     public static String toGelf(SyslogMessage msg) {
-        StringBuilder sb = new StringBuilder("{ \"version\": \"1.1\",");
-        sb.append(String.format("\"host\": \"%s\",", msg.hostname));
-        sb.append(String.format("\"short_message\": \"%s\",", JsonUtil.encode(msg.message)));
-        sb.append(String.format("\"full_message\": \"%s\",", msg.structuredData));
-        sb.append(String.format("\"timestamp\": %d,", msg.timestamp.getEpochSecond()));
-        sb.append(String.format("\"level\": %d,", msg.severity.toNumber()));
-        sb.append(String.format("\"_facility\": \"%s\",", msg.facility));
-        sb.append(String.format("\"_severity\": \"%s\",", msg.severity));
-        sb.append(String.format("\"_application\": \"%s\",", msg.application));
-        if(msg.processId != null) { sb.append(String.format("\"_process-id\": \"%s\",", msg.processId)); }
-        if(msg.messageId != null) { sb.append(String.format("\"_message-id\": \"%s\",", msg.messageId)); }
-        if(msg.structuredData != null) { sb.append(String.format("\"_structured-data\": \"%s\",", msg.structuredData)); }
+        StringBuilder sb = new StringBuilder("{ \"version\": \"1.1\"");
+        sb.append(String.format(", \"host\": \"%s\"", msg.hostname));
+        sb.append(String.format(", \"short_message\": \"%s\"", JsonUtil.encode(msg.message)));
+        sb.append(String.format(", \"full_message\": \"%s\"", JsonUtil.encode(msg.structuredData)));
+        sb.append(String.format(", \"timestamp\": %d", msg.timestamp.getEpochSecond()));
+        sb.append(String.format(", \"level\": %d", msg.severity.toNumber()));
+        sb.append(String.format(", \"_facility\": \"%s\"", msg.facility));
+        sb.append(String.format(", \"_severity\": \"%s\"", msg.severity));
+        sb.append(String.format(", \"_application\": \"%s\"", msg.application));
+        if(msg.processId != null) { sb.append(String.format(", \"_process-id\": \"%s\"", msg.processId)); }
+        if(msg.messageId != null) { sb.append(String.format(", \"_message-id\": \"%s\"", msg.messageId)); }
+        if(msg.structuredData != null) { sb.append(String.format(", \"_structured-data\": \"%s\"", JsonUtil.encode(msg.structuredData))); }
         sb.append("}");
         return sb.toString();
     }

@@ -26,9 +26,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 
 public class TcpServer {
+
+    private final static Logger log = LoggerFactory.getLogger(TcpServer.class);
 
     private final int port;
     private ServerSocket serverSocket;
@@ -91,14 +97,14 @@ public class TcpServer {
                     sendEvent(inputLine);
                 }
             } catch (IOException e) {
-                System.err.printf("TcpServer - error: %s\n", e.getMessage());
+                log.warn("run() - read error: {}", e.getMessage());
             }
 
             try {
                 in.close();
                 clientSocket.close();
             } catch (IOException e) {
-                System.err.printf("TcpServer - error: %s\n", e.getMessage());
+                log.warn("run() - close error: {}", e.getMessage());
             }
 
         }

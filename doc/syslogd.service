@@ -4,7 +4,7 @@ Description=Syslog Director
 [Service]
 TimeoutStartSec=0
 Restart=always
-ExecStart=/opt/syslogd/bin/syslogd --port 514 --no-stdout --syslog=udp://localhost:1514
+ExecStart=/opt/syslogd/bin/syslogd --port 514 --no-ansi
 
 [Install]
 WantedBy=default.target

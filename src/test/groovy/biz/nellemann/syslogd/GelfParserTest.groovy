@@ -85,4 +85,16 @@ class GelfParserTest extends Specification {
 
     }
 
+    void "junk GET request"() {
+
+        setup:
+        def input = 'GET /'
+
+        when:
+        SyslogMessage msg = syslogParser.parse(input)
+
+        then:
+        msg == null
+    }
+
 }

@@ -24,7 +24,12 @@ import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class UdpServer extends Thread {
+
+    private final static Logger log = LoggerFactory.getLogger(UdpServer.class);
 
     protected DatagramSocket socket;
     protected boolean listen = true;
@@ -44,7 +49,7 @@ public class UdpServer extends Thread {
                 //String packetData = new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8);
                 sendEvent(packet);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("run() - error: {}", e.getMessage());
                 listen = false;
             }
         }
