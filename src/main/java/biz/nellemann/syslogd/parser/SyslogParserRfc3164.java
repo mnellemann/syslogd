@@ -31,7 +31,7 @@ public class SyslogParserRfc3164 extends SyslogParser {
 
     private final static Logger log = LoggerFactory.getLogger(SyslogParserRfc3164.class);
 
-    private final Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3}\\s+\\d{1,2} \\d{2}:\\d{2}:\\d{2})\\s+(Message forwarded from \\S+:|\\S+)\\s+([^\\s:]+):?\\s+(.*)", Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\D{3}\\s+\\d{1,2} \\d{2}:\\d{2}:\\d{2})\\s+(Message forwarded from \\S+:|\\S+:?)\\s+([^\\s:]+):?\\s+(.*)", Pattern.CASE_INSENSITIVE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy MMM [ ]d HH:mm:ss").withZone(ZoneId.systemDefault());
 
     /**

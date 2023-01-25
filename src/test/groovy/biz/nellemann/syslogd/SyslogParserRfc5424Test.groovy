@@ -40,6 +40,7 @@ class SyslogParserRfc5424Test extends Specification {
         msg.application == "su"
         msg.messageId == "ID47"
         msg.processId == null
+        msg.message == "BOM'su root' failed for lonvick on /dev/pts/8"
     }
 
     void "test rfc5424 example2 message"() {

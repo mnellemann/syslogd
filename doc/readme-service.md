@@ -1,11 +1,11 @@
-# Syslogd as a System Service
+# Syslogd as a system service
 
-## Systemd
+## For systemd
 
-Edit the **syslogd.service** and configure required options.
+To install as a systemd service, copy the [syslogd.service](syslogd.service)
+file into */etc/systemd/system/*, edit the file and configure your required options.
 
-To install as a systemd service, copy the **syslogd.service**
-file into */etc/systemd/system/* and enable the service:
+Enable and start the service:
 
 ```shell
 systemctl daemon-reload

@@ -50,13 +50,13 @@ class SyslogParserRfc3164Test extends Specification {
     void "test rfc3164 normal message"() {
 
         setup:
-        def input = "<13>Sep 23 08:53:28 xps13 mark: adfdfdf3432434"
+        def input = "<13>Sep 23 08:53:28 xps13 mark: adfdfdf3432434 abcdefghijklmnopqrstuvwxyz"
 
         when:
         SyslogMessage msg = syslogParser.parse(input)
 
         then:
-        msg.message == "adfdfdf3432434"
+        msg.message == "adfdfdf3432434 abcdefghijklmnopqrstuvwxyz"
         msg.hostname == "xps13"
         msg.application == "mark"
     }

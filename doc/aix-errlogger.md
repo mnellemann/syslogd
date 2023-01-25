@@ -39,7 +39,7 @@ refresh -s syslogd
 
 ### Forward errlogger to the local syslog
 
-We configure the errloger to forward messages to the local syslog service.
+We configure the AIX [error logger](https://www.ibm.com/docs/en/aix/7.3?topic=concepts-error-logging-overview) to forward messages to the local syslog service.
 
 Create an odm errnotify logging template file:
 

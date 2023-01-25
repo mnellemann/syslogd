@@ -33,7 +33,7 @@ public class SyslogParserRfc5424 extends SyslogParser {
 
     private final static Logger log = LoggerFactory.getLogger(SyslogParserRfc5424.class);
 
-    private final Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\d+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\[.*\\]|-)\\s+(\\S+)", Pattern.CASE_INSENSITIVE);
+    private final Pattern pattern = Pattern.compile("^<(\\d{1,3})>(\\d+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\[.*\\]|-)\\s+(.*)", Pattern.CASE_INSENSITIVE);
 
     /**
      * Parses [rfc5424](https://tools.ietf.org/html/rfc5424) syslog messages.

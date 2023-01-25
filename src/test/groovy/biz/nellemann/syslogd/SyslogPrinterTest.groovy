@@ -10,10 +10,23 @@ class SyslogPrinterTest extends Specification {
     void setup() {
     }
 
+    void "to plain"() {
+        setup:
+        SyslogParser syslogParser = new SyslogParserRfc5424();
+        String input = '<13>1 2020-09-23T08:57:30.950699+02:00 xps13 mark - - [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] adfdfdf3432434565656 abcdefghijklmnopqrstuvwxyz'
+        SyslogMessage msg = syslogParser.parse(input)
+
+        when:
+        String output = SyslogPrinter.toString(msg)
+
+        then:
+        output.endsWith("abcdefghijklmnopqrstuvwxyz")
+    }
+
     void "test toGelf"() {
         setup:
         SyslogParser syslogParser = new SyslogParserRfc5424();
-        String input = '<13>1 2020-09-23T08:57:30.950699+02:00 xps13 mark - - [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] adfdfdf3432434565656'
+        String input = '<13>1 2020-09-23T08:57:30.950699+02:00 xps13 mark - - [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] adfdfdf3432434565656 abcdefghijklmnopqrstuvwxyz'
         SyslogMessage msg = syslogParser.parse(input)
 
         when:
@@ -26,14 +39,14 @@ class SyslogPrinterTest extends Specification {
     void "test toLoki"() {
         setup:
         SyslogParser syslogParser = new SyslogParserRfc5424();
-        String input = '<13>1 2020-09-23T08:57:30.950699+02:00 xps13 mark - - [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] adfdfdf3432434565656'
+        String input = '<13>1 2020-09-23T08:57:30.950699+02:00 xps13 mark - - [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] adfdfdf3432434565656 abcdefghijklmnopqrstuvwxyz'
         SyslogMessage msg = syslogParser.parse(input)
 
         when:
         String output = SyslogPrinter.toLoki(msg)
 
         then:
-        output == '{ "streams": [ { "stream": { "hostname": "xps13", "facility": "user", "level": "notice", "application": "mark"}, "values": [ [ "1600845200000000000", "[user.notice] xps13 mark adfdfdf3432434565656" ] ] } ] }'
+        output == '{ "streams": [ { "stream": { "hostname": "xps13", "facility": "user", "level": "notice", "application": "mark"}, "values": [ [ "1600845200000000000", "[user.notice] xps13 mark adfdfdf3432434565656 abcdefghijklmnopqrstuvwxyz" ] ] } ] }'
     }
 
 }
