@@ -27,14 +27,15 @@ Some of my other related projects are:
 - Install the syslogd package (*.deb* or *.rpm*) from [packages](https://git.data.coop/nellemann/-/packages/generic/syslogd/) or build from source.
 
 ```text
-Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdout] [--[no-]tcp] [--[no-]udp]
-               [-f=<protocol>] [-p=<num>] [--to-gelf=<uri>] [--to-loki=<url>]
-               [--to-syslog=<uri>]
+Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdin] [--[no-]stdout] [--[no-]tcp]
+               [--[no-]udp] [-f=<protocol>] [-p=<num>] [--to-gelf=<uri>]
+               [--to-loki=<url>] [--to-syslog=<uri>]
   -d, --debug               Enable debugging [default: 'false'].
   -f, --format=<protocol>   Input format: RFC-5424, RFC-3164 or GELF [default:
                               RFC-3164].
   -h, --help                Show this help message and exit.
       --[no-]ansi           Output in ANSI colors [default: true].
+      --[no-]stdin          Forward messages from stdin [default: true].
       --[no-]stdout         Output messages to stdout [default: true].
       --[no-]tcp            Listen on TCP [default: true].
       --[no-]udp            Listen on UDP [default: true].

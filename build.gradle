@@ -13,12 +13,12 @@ repositories {
 }
 
 dependencies {
-    annotationProcessor 'info.picocli:picocli-codegen:4.7.0'
-    implementation 'info.picocli:picocli:4.7.0'
+    annotationProcessor 'info.picocli:picocli-codegen:4.7.1'
+    implementation 'info.picocli:picocli:4.7.1'
     implementation 'org.slf4j:slf4j-api:2.0.6'
     implementation 'org.slf4j:slf4j-simple:2.0.6'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
     implementation 'org.apache.commons:commons-collections4:4.4'
 
     testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'

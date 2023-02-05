@@ -8,6 +8,10 @@ public class JsonUtil {
 
     public static String encode(String input) {
 
+        if(input == null) {
+            return "";
+        }
+
         StringBuilder output = new StringBuilder();
 
         for (int i = 0; i < input.length(); i++) {

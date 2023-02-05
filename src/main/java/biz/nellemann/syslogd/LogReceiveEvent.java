@@ -23,15 +23,13 @@ import java.util.EventObject;
 public class LogReceiveEvent extends EventObject {
 
     private static final long serialVersionUID = 1L;
-    //private final String message;
     private final DatagramPacket packet;
 
-    /*
     public LogReceiveEvent(final Object source, final String message ) {
         super( source );
-        this.message = message;
+        byte[] bytes = message.getBytes();
+        this.packet = new DatagramPacket(bytes, bytes.length);
     }
-    */
 
     public LogReceiveEvent(final Object source, final DatagramPacket packet) {
         super( source );

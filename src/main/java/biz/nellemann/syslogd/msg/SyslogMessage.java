@@ -36,7 +36,7 @@ public class SyslogMessage {
 
     // The TIMESTAMP field is a formalized timestamp derived from [RFC3339].
     @JsonProperty("timestamp")  // 1670357783.694 - in GELF: seconds since UNIX epoch with optional decimal places for milliseconds
-    public Instant timestamp;
+    public Instant timestamp = Instant.now();
 
     // The HOSTNAME field identifies the machine that originally sent the syslog message.
     @JsonProperty("host")

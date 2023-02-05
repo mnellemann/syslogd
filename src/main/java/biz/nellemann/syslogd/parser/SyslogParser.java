@@ -73,7 +73,7 @@ public abstract class SyslogParser {
             Inflater decompressor = new Inflater();
             decompressor.setInput(data, 0, data.length);
             //byte[] result = new byte[data.length * 2];
-            int resultLength = decompressor.inflate(result);
+            decompressor.inflate(result);
             decompressor.end();
 
             // Decode the bytes into a String

@@ -58,6 +58,9 @@ public class Application implements Callable<Integer>, LogReceiveListener {
     @CommandLine.Option(names = "--no-stdout", negatable = true, description = "Output messages to stdout [default: true].", defaultValue = "true")
     private boolean stdout;
 
+    @CommandLine.Option(names = "--no-stdin", negatable = true, description = "Forward messages from stdin [default: true].", defaultValue = "true")
+    private boolean stdin;
+
     @CommandLine.Option(names = {"-f", "--format"}, description = "Input format: RFC-5424, RFC-3164 or GELF [default: RFC-3164].", defaultValue = "RFC-3164")
     private String protocol;
 
@@ -76,7 +79,6 @@ public class Application implements Callable<Integer>, LogReceiveListener {
 
     @Override
     public Integer call() throws IOException {
-
 
         if(enableDebug) {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
@@ -113,6 +115,12 @@ public class Application implements Callable<Integer>, LogReceiveListener {
             logForwardListeners.add(lokiClient);
             Thread t = new Thread(lokiClient);
             t.start();
+        }
+
+        if(stdin) {
+            InputReader inputReader = new InputReader(System.in, protocol);
+            inputReader.addEventListener(this);
+            inputReader.start();
         }
 
         if(udpServer) {
