@@ -15,18 +15,21 @@
  */
 package biz.nellemann.syslogd.net;
 
-import biz.nellemann.syslogd.LogForwardEvent;
-import biz.nellemann.syslogd.LogForwardListener;
-import biz.nellemann.syslogd.SyslogPrinter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ArrayBlockingQueue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import biz.nellemann.syslogd.LogForwardEvent;
+import biz.nellemann.syslogd.LogForwardListener;
+import biz.nellemann.syslogd.SyslogPrinter;
 
 public class LokiClient implements LogForwardListener, Runnable {
 
@@ -84,7 +87,7 @@ public class LokiClient implements LogForwardListener, Runnable {
         while (true) {
             try {
                 send(blockingQueue.take());
-            } catch (Exception e) {
+            } catch (MalformedURLException | InterruptedException e) {
                 log.warn(e.getMessage());
             }
         }

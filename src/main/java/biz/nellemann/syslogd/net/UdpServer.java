@@ -15,9 +15,6 @@
  */
 package biz.nellemann.syslogd.net;
 
-import biz.nellemann.syslogd.LogReceiveEvent;
-import biz.nellemann.syslogd.LogReceiveListener;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -26,6 +23,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import biz.nellemann.syslogd.LogReceiveEvent;
+import biz.nellemann.syslogd.LogReceiveListener;
 
 public class UdpServer extends Thread {
 
@@ -38,6 +38,7 @@ public class UdpServer extends Thread {
         socket = new DatagramSocket(port);
     }
 
+    @Override
     public void run() {
 
         byte[] buf = new byte[8192];
@@ -48,7 +49,7 @@ public class UdpServer extends Thread {
                 socket.receive(packet);
                 //String packetData = new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8);
                 sendEvent(packet);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("run() - error: {}", e.getMessage());
                 listen = false;
             }

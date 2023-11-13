@@ -1,11 +1,11 @@
 package biz.nellemann.syslogd;
 
-import biz.nellemann.syslogd.msg.SyslogMessage;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import biz.nellemann.syslogd.msg.SyslogMessage;
 
 public class InputReader extends Thread {
 
@@ -17,6 +17,7 @@ public class InputReader extends Thread {
         this.protocol = protocol;
     }
 
+    @Override
     public void run() {
 
         while(input.hasNextLine()) {
