@@ -15,19 +15,20 @@
  */
 package biz.nellemann.syslogd.parser;
 
-import biz.nellemann.syslogd.msg.Severity;
-import biz.nellemann.syslogd.msg.Facility;
-import biz.nellemann.syslogd.msg.SyslogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import biz.nellemann.syslogd.msg.Facility;
+import biz.nellemann.syslogd.msg.Severity;
+import biz.nellemann.syslogd.msg.SyslogMessage;
 
 public class SyslogParserRfc5424 extends SyslogParser {
 
@@ -98,6 +99,7 @@ public class SyslogParserRfc5424 extends SyslogParser {
      * @param dateString
      * @return
      */
+    @Override
     public Instant parseTimestamp(String dateString) {
 
         /*

@@ -15,17 +15,20 @@
  */
 package biz.nellemann.syslogd.parser;
 
-import biz.nellemann.syslogd.msg.Facility;
-import biz.nellemann.syslogd.msg.Severity;
-import biz.nellemann.syslogd.msg.SyslogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.time.*;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import biz.nellemann.syslogd.msg.Facility;
+import biz.nellemann.syslogd.msg.Severity;
+import biz.nellemann.syslogd.msg.SyslogMessage;
 
 public class SyslogParserRfc3164 extends SyslogParser {
 
@@ -89,6 +92,7 @@ public class SyslogParserRfc3164 extends SyslogParser {
      * @param dateString
      * @return
      */
+    @Override
     public Instant parseTimestamp(String dateString) {
 
         // We need to add current year to parse date correctly

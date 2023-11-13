@@ -1,16 +1,18 @@
 package biz.nellemann.syslogd.parser;
 
-import biz.nellemann.syslogd.msg.SyslogMessage;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.TreeMap;
+
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.TreeMap;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import biz.nellemann.syslogd.msg.SyslogMessage;
 
 /*
     For more information about the GELF format, visit:  https://go2docs.graylog.org/5-0/getting_in_log_data/gelf.html

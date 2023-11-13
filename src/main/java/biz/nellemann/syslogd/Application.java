@@ -15,16 +15,6 @@
  */
 package biz.nellemann.syslogd;
 
-import biz.nellemann.syslogd.msg.SyslogMessage;
-import biz.nellemann.syslogd.net.*;
-import biz.nellemann.syslogd.parser.GelfParser;
-import biz.nellemann.syslogd.parser.SyslogParser;
-import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
-import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
-
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -33,6 +23,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
+
+import biz.nellemann.syslogd.msg.SyslogMessage;
+import biz.nellemann.syslogd.net.GelfClient;
+import biz.nellemann.syslogd.net.LokiClient;
+import biz.nellemann.syslogd.net.TcpServer;
+import biz.nellemann.syslogd.net.UdpClient;
+import biz.nellemann.syslogd.net.UdpServer;
+import biz.nellemann.syslogd.parser.GelfParser;
+import biz.nellemann.syslogd.parser.SyslogParser;
+import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
+import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
@@ -152,7 +155,7 @@ public class Application implements Callable<Integer>, LogReceiveListener {
 
         if(msg != null) {
 
-            if(logForwardListeners.size() > 0) {
+            if(!logForwardListeners.isEmpty()) {
                 sendForwardEvent(msg);
             }
 

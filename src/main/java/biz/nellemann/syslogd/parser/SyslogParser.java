@@ -15,14 +15,15 @@
  */
 package biz.nellemann.syslogd.parser;
 
-import biz.nellemann.syslogd.msg.SyslogMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import biz.nellemann.syslogd.msg.SyslogMessage;
 
 public abstract class SyslogParser {
 

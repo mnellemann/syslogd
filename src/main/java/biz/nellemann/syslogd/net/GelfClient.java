@@ -1,12 +1,13 @@
 package biz.nellemann.syslogd.net;
 
-import biz.nellemann.syslogd.LogForwardEvent;
-import biz.nellemann.syslogd.SyslogPrinter;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetSocketAddress;
-import java.net.SocketException;
+import biz.nellemann.syslogd.LogForwardEvent;
+import biz.nellemann.syslogd.SyslogPrinter;
 
 public class GelfClient extends UdpClient {
 
