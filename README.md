@@ -18,13 +18,13 @@ This software is free to use and is licensed under the [Apache 2.0 License](LICE
 
 Some of my other related projects are:
 
-- [hmci](https://git.data.coop/nellemann/hmci) for agent-less monitoring of IBM Power servers
-- [svci](https://git.data.coop/nellemann/svci) for monitoring IBM Spectrum Virtualize (Flashsystems / Storwize / SVC)
-- [sysmon](https://git.data.coop/nellemann/sysmon) for monitoring all types of servers with a small Java agent
+- [hmci](https://github.com/mnellemann/hmci) for agent-less monitoring of IBM Power servers
+- [svci](https://github.com/mnellemann/svci) for monitoring IBM Spectrum Virtualize (Flashsystems / Storwize / SVC)
+- [sysmon](https://github.com/mnellemann/sysmon) for monitoring all types of servers with a small Java agent
 
 ## Usage Instructions
 
-- Install the syslogd package (*.deb* or *.rpm*) from [packages](https://git.data.coop/nellemann/-/packages/generic/syslogd/) or build from source.
+- Install the syslogd package (*.deb* or *.rpm*) from [releases](https://github.com/mnellemann/syslogd/releases) or build from source.
 
 ```text
 Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdin] [--[no-]stdout] [--[no-]tcp]
