@@ -25,6 +25,11 @@ public class InputReader extends Thread {
             msg.hostname = "localhost";
             msg.application = "syslogd";
 
+            // Skip empty input
+            if(msg.length() < 1) {
+                continue;
+            }
+
             String payload;
             if(protocol.equalsIgnoreCase("GELF"))
                 payload = SyslogPrinter.toGelf(msg);

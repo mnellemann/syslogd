@@ -67,4 +67,10 @@ public class SyslogMessage {
         this.message = message;
     }
 
+    public int length() {
+        if(message == null) return 0;
+        return message.length();
+    }
+
+
 }

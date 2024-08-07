@@ -53,31 +53,37 @@ Any port number above 1024 does not require privileges and can be selected with 
 
 Listening on the default syslog port:
 
-```
+```shell
 java -jar /path/to/syslogd-x.y.z-all.jar --port 514
 ```
 
 or, if installed as a *deb* or *rpm* package:
 
-```
+```shell
 /opt/syslogd/bin/syslogd --port 514
 ```
 
 Forwarding messages on to another log-system on a non-standard port.
 
-```
+```shell
 java -jar /path/to/syslogd-x.y.z-all.jar --to-syslog udp://remotehost:514
 ```
 
 Forwarding messages to a Graylog server in GELF format.
 
-```
+```shell
 java -jar /path/to/syslogd-x.y.z-all.jar --to-gelf udp://remotehost:12201
+```
+
+From a tmux session, listning for syslog messages and forwarding to a Graylog server on localhost:
+
+```shell
+tmux new -s "syslogd" "/opt/syslogd/bin/syslogd -p 514 --to-gelf=udp://localhost:12201"
 ```
 
 Forwarding to a Grafana Loki server.
 
-```
+```shell
 java -jar /path/to/syslogd-x.y.z-all.jar --to-loki http://remotehost:3100
 ```
 
