@@ -1,14 +1,14 @@
 # AIX errlogger to remote syslog
 
-Instructions for how to forward errlogger messages from IBM AIX and IBM Power Systems VIO Servers to a remote logging solution.
+Instructions for how to forward *errlogger* messages from IBM AIX and IBM Power Systems VIO Servers to a remote logging solution.
 
-More information about the AIX errlogger is available on the IBM [knowledge center](https://www.ibm.com/support/knowledgecenter/ssw_aix_72/generalprogramming/error_notice.html).
+More information about the AIX *errlogger* is available on the IBM [knowledge center](https://www.ibm.com/support/knowledgecenter/ssw_aix_72/generalprogramming/error_notice.html).
 
 ## On each AIX / VIO Server
 
 ### Prepare the local syslog service
 
-Configure the local syslog service to forward messages to our remote [syslogd](https://git.data.coop/nellemann/syslogd/) service.
+Configure the local syslog service to forward messages to your remote syslog service (only port 514/UDP is supported).
 
 Create an empty local log file:
 
