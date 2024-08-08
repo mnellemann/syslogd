@@ -19,8 +19,8 @@ This software is free to use and is licensed under the [Apache 2.0 License](LICE
 Some of my other related projects are:
 
 - [hmci](https://github.com/mnellemann/hmci) for agent-less monitoring of IBM Power servers
-- [svci](https://github.com/mnellemann/svci) for monitoring IBM Spectrum Virtualize (Flashsystems / Storwize / SVC)
-- [sysmon](https://github.com/mnellemann/sysmon) for monitoring all types of servers with a small Java agent
+- [svci](https://github.com/mnellemann/svci) for monitoring IBM Storage (Flashsystems / Storwize / SVC)
+- [sysmon](https://github.com/mnellemann/sysmon) for monitoring directly from host with a small Java agent
 
 ## Usage Instructions
 
@@ -49,7 +49,10 @@ Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdin] [--[no-]stdout] [--[no-]tcp]
 The default syslog port (514) requires you to run syslogd as root / administrator.
 Any port number above 1024 does not require privileges and can be selected with the *-p* or *--port* option.
 
-### Examples
+------
+
+<details closed>
+  <summary><B>Examples</B></summary>
 
 Listening on the default syslog port:
 
@@ -75,22 +78,26 @@ Forwarding messages to a Graylog server in GELF format.
 java -jar /path/to/syslogd-x.y.z-all.jar --to-gelf udp://remotehost:12201
 ```
 
-From a tmux session, listning for syslog messages and forwarding to a Graylog server on localhost:
-
-```shell
-tmux new -s "syslogd" "/opt/syslogd/bin/syslogd -p 514 --to-gelf=udp://localhost:12201"
-```
-
 Forwarding to a Grafana Loki server.
 
 ```shell
 java -jar /path/to/syslogd-x.y.z-all.jar --to-loki http://remotehost:3100
 ```
 
+Started from a tmux session, listening for syslog messages and forwarding to a remote Graylog server:
+
+```shell
+tmux new-session -d -s "syslogd" "/opt/syslogd/bin/syslogd -p 514 --to-gelf=udp://remotehost:12201"
+```
+
 If you don't want any output locally (only forwarding), you can use the ```--no-stdout``` flag.
 
+</details>
 
-## Notes
+------
+
+<details closed>
+  <summary><B>Notes</B></summary>
 
 ### IBM AIX and VIO Servers
 
@@ -100,6 +107,7 @@ Syslog messages from AIX (and IBM Power Virtual I/O Servers) can be troublesome 
 ### Forwarding to Grafana Loki
 
 Forwarding is currently done by making HTTP connections to the Loki API, which works fine for low volume messages, but might cause issues for large volume of messages.
+
 
 ## Development Notes
 
@@ -112,3 +120,4 @@ docker run --rm -d --name=loki -p 3100:3100 grafana/loki
 docker run --rm -d --name=grafana --link loki:loki -p 3000:3000 grafana/grafana:7.1.3
 ```
 
+</details>

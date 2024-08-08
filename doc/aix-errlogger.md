@@ -31,7 +31,7 @@ Add the following to the /etc/syslog.conf file:
 We use *10.32.64.1* as our remote syslog server in the above example.
 
 
-Restart the syslogd service:
+Restart the syslog service:
 
 ```shell
 refresh -s syslogd
@@ -63,7 +63,7 @@ Verify messages show up in the local syslog */var/log/error.log* file:
 
 ```shell
 odmget -q"en_name='syslog1'" errnotify
-errlogger system Test
+errlogger Testing 123
 ```
 
 #### Notes
@@ -80,9 +80,8 @@ To lookup err message details by a seq. no, run:
 errpt -a -l [seq-no]
 ```
 
-Or from the padmin shell:
+Or from the VIO padmin shell:
 
 ```shell
 errlog -ls -seq [seq-no]
 ```
-
