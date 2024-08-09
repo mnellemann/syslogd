@@ -1,6 +1,6 @@
 # Syslog Director
 
-All received messages are written to *stdout* and/or forwarded to remote logging destinations.
+All received messages are written to *stdout* and/or forwarded to one or more remote logging destinations.
 
 Supported incoming message formats are:
 - Syslog RFC5424 - TCP and UDP
@@ -54,34 +54,34 @@ Any port number above 1024 does not require privileges and can be selected with 
 <details closed>
   <summary><B>Examples</B></summary>
 
-Listening on the default syslog port:
+Listening on a non-standard syslog port:
 
 ```shell
-java -jar /path/to/syslogd-x.y.z-all.jar --port 514
+java -jar /path/to/syslogd-x.y.z-all.jar --port 1514
 ```
 
 or, if installed as a *deb* or *rpm* package:
 
 ```shell
-/opt/syslogd/bin/syslogd --port 514
+/opt/syslogd/bin/syslogd --port 1514
 ```
 
 Forwarding messages on to another log-system on a non-standard port.
 
 ```shell
-java -jar /path/to/syslogd-x.y.z-all.jar --to-syslog udp://remotehost:514
+/opt/syslogd/bin/syslogd --to-syslog udp://remotehost:1514
 ```
 
 Forwarding messages to a Graylog server in GELF format.
 
 ```shell
-java -jar /path/to/syslogd-x.y.z-all.jar --to-gelf udp://remotehost:12201
+/opt/syslogd/bin/syslogd --to-gelf udp://remotehost:12201
 ```
 
 Forwarding to a Grafana Loki server.
 
 ```shell
-java -jar /path/to/syslogd-x.y.z-all.jar --to-loki http://remotehost:3100
+/opt/syslogd/bin/syslogd --to-loki http://remotehost:3100
 ```
 
 Started from a tmux session, listening for syslog messages and forwarding to a remote Graylog server:
@@ -108,8 +108,13 @@ Syslog messages from AIX (and IBM Power Virtual I/O Servers) can be troublesome 
 
 Forwarding is currently done by making HTTP connections to the Loki API, which works fine for low volume messages, but might cause issues for large volume of messages.
 
+</details>
 
-## Development Notes
+
+------
+
+<details closed>
+  <summary><B>Development</B></summary>
 
 ### Test Grafana Loki
 
