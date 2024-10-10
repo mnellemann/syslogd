@@ -42,6 +42,7 @@ import ro.pippo.core.Pippo;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
+        showAtFileInUsageHelp = true,
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Main implements Callable<Integer>, LogReceiveListener {
 
@@ -51,29 +52,29 @@ public class Main implements Callable<Integer>, LogReceiveListener {
     private ArrayDeque<SyslogMessage> deque = new ArrayDeque<>(100);
 
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 1514].", defaultValue = "1514", paramLabel = "<num>")
+    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: ${DEFAULT-VALUE}].", defaultValue = "1514", paramLabel = "<num>")
     private int port;
 
-    @CommandLine.Option(names = "--no-web", negatable = true, description = "Start web [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-web", negatable = true, description = "Start Web-UI [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean webServer;
 
-    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean udpServer;
 
-    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean tcpServer;
 
-    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output in ANSI colors [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output in ANSI colors [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean ansiOutput;
 
-    @CommandLine.Option(names = "--no-stdout", negatable = true, description = "Output messages to stdout [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-stdout", negatable = true, description = "Output messages to stdout [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean stdout;
 
-    @CommandLine.Option(names = "--no-stdin", negatable = true, description = "Forward messages from stdin [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-stdin", negatable = true, description = "Forward messages from stdin [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean stdin;
 
-    @CommandLine.Option(names = {"-f", "--format"}, description = "Input format: RFC-5424, RFC-3164 or GELF [default: RFC-3164].", defaultValue = "RFC-3164")
-    private String protocol;
+    @CommandLine.Option(names = {"-f", "--format"}, description = "Input format: ${COMPLETION-CANDIDATES} [default: ${DEFAULT-VALUE}].", defaultValue = "RFC3164")
+    private InputProtocol protocol = InputProtocol.RFC3164;
 
     @CommandLine.Option(names = { "--to-syslog"}, description = "Forward to Syslog <udp://host:port> (RFC-5424).", paramLabel = "<uri>")
     private URI syslog;
@@ -84,7 +85,7 @@ public class Main implements Callable<Integer>, LogReceiveListener {
     @CommandLine.Option(names = { "--to-loki"}, description = "Forward to Grafana Loki <http://host:port>.", paramLabel = "<url>")
     private URL loki;
 
-    @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: 'false'].")
+    @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: ${DEFAULT-VALUE}].")
     private boolean enableDebug = false;
 
 
@@ -95,9 +96,9 @@ public class Main implements Callable<Integer>, LogReceiveListener {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         }
 
-        if(protocol.equalsIgnoreCase("GELF"))
+        if(protocol == InputProtocol.GELF)
             syslogParser = new GelfParser();
-        else if (protocol.equalsIgnoreCase("RFC-5424")) {
+        else if (protocol == InputProtocol.RFC5424) {
             syslogParser = new SyslogParserRfc5424();
         } else {
             syslogParser = new SyslogParserRfc3164();

@@ -76,10 +76,10 @@ public class SyslogMessage implements Comparable<SyslogMessage> {
     @Override
     public int compareTo(SyslogMessage other) {
         if(this.timestamp.isBefore(other.timestamp)) {
-            return 1;
+            return -1;
         }
         if(this.timestamp.isAfter(other.timestamp)) {
-            return -1;
+            return 1;
         }
         return 0;
     }

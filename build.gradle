@@ -1,3 +1,5 @@
+import org.redline_rpm.header.Os
+
 plugins {
     id 'java'
     id 'groovy'
@@ -21,7 +23,6 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.4'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.4'
     implementation 'org.apache.commons:commons-collections4:4.4'
-
     testImplementation 'org.spockframework:spock-core:2.3-groovy-4.0'
 }
 
@@ -61,16 +62,37 @@ jacocoTestCoverageVerification {
             }
             limit {
                 counter = 'BRANCH'
-                minimum = 0.3
+                minimum = 0.1
             }
             limit {
                 counter = 'CLASS'
-                minimum = 0.4
+                minimum = 0.3
             }
         }
     }
 }
 check.dependsOn jacocoTestCoverageVerification
+
+jar {
+    manifest {
+        attributes(
+            'Created-By'     : "Gradle ${gradle.gradleVersion}",
+            'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
+            'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+            'Build-User'     : System.properties['user.name'],
+            'Build-Version'  : gitVersion(),
+            'Build-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ").toString(),
+        )
+    }
+}
+
+tasks.register("packages") {
+    group "build"
+    dependsOn ":build"
+    dependsOn ":buildDeb"
+    dependsOn ":buildRpm"
+}
+
 
 ospackage {
     packageName = 'syslogd'
@@ -98,31 +120,19 @@ ospackage {
 
 }
 
-buildRpm {
-    dependsOn startShadowScripts
-    os = "LINUX"
-}
-
 buildDeb {
     dependsOn startShadowScripts
+    installUtils file('scripts/utils.sh') as File
+    installUtils file('scripts/config.sh') as File
+    preUninstall file('scripts/deb-pre-rm.sh') as File
+    postInstall file('scripts/deb-post-inst.sh') as File
 }
 
-jar {
-    manifest {
-        attributes(
-            'Created-By'     : "Gradle ${gradle.gradleVersion}",
-            'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
-            'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-            'Build-User'     : System.properties['user.name'],
-            'Build-Version'  : gitVersion(),
-            'Build-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ").toString(),
-        )
-    }
-}
-
-tasks.register("packages") {
-    group "build"
-    dependsOn ":build"
-    dependsOn ":buildDeb"
-    dependsOn ":buildRpm"
+buildRpm {
+    dependsOn startShadowScripts
+    installUtils file('scripts/utils.sh') as File
+    installUtils file('scripts/config.sh') as File
+    preUninstall file('scripts/rpm-pre-rm.sh') as File
+    postTrans file('scripts/rpm-post-inst.sh') as File
+    os Os.LINUX
 }

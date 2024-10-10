@@ -1,4 +1,4 @@
-# Syslog Director
+    # Syslog Director
 
 All received messages are written to *stdout* and/or forwarded to one or more remote logging destinations.
 
@@ -82,6 +82,12 @@ Forwarding to a Grafana Loki server.
 
 ```shell
 /opt/syslogd/bin/syslogd --to-loki http://remotehost:3100
+```
+
+Receive log messages in sent with the GELF protocol:
+
+```shell
+/opt/syslogd/bin/syslogd --port 12201 --format GELF
 ```
 
 Started from a tmux session, listening for syslog messages and forwarding to a remote Graylog server:

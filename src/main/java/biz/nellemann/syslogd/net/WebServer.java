@@ -20,16 +20,12 @@ public class WebServer extends Application {
 
         GET("/", routeContext -> routeContext.render("index"));
 
-        // send 'Hello World' as response
-        GET("/test", routeContext -> routeContext.send("Hello World"));
+        GET("/ping", routeContext -> routeContext.send("pong"));
 
-        // send logs as reponse
         GET("/log", routeContext -> routeContext.text().negotiateContentType().send(
             deque.stream().sorted(Collections.reverseOrder()).map(SyslogPrinter::toHtml).collect(Collectors.joining())
         ));
 
     }
-
-
 
 }
