@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,24 +31,31 @@ import biz.nellemann.syslogd.net.LokiClient;
 import biz.nellemann.syslogd.net.TcpServer;
 import biz.nellemann.syslogd.net.UdpClient;
 import biz.nellemann.syslogd.net.UdpServer;
+import biz.nellemann.syslogd.net.WebServer;
 import biz.nellemann.syslogd.parser.GelfParser;
 import biz.nellemann.syslogd.parser.SyslogParser;
 import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
 import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import ro.pippo.core.Pippo;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
-public class Application implements Callable<Integer>, LogReceiveListener {
+public class Main implements Callable<Integer>, LogReceiveListener {
 
     private final List<LogForwardListener> logForwardListeners = new ArrayList<>();
     private SyslogParser syslogParser;
+    private static boolean keepRunning = true;
+    private ArrayDeque<SyslogMessage> deque = new ArrayDeque<>(100);
 
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 1514].", defaultValue = "1514", paramLabel = "<num>")
     private int port;
+
+    @CommandLine.Option(names = "--no-web", negatable = true, description = "Start web [default: true].", defaultValue = "true")
+    private boolean webServer;
 
     @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true].", defaultValue = "true")
     private boolean udpServer;
@@ -81,7 +89,7 @@ public class Application implements Callable<Integer>, LogReceiveListener {
 
 
     @Override
-    public Integer call() throws IOException {
+    public Integer call() throws IOException, InterruptedException {
 
         if(enableDebug) {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
@@ -138,6 +146,18 @@ public class Application implements Callable<Integer>, LogReceiveListener {
             tcpServer.start();
         }
 
+        if(webServer) {
+            WebServer pippoApp = new WebServer();
+            pippoApp.setDeque(deque);
+            Pippo pippo = new Pippo(pippoApp);
+            pippo.addPublicResourceRoute();
+            pippo.start();
+        }
+
+        while(keepRunning) {
+            Thread.sleep(1000);
+        }
+
         return 0;
     }
 
@@ -167,6 +187,8 @@ public class Application implements Callable<Integer>, LogReceiveListener {
                 }
             }
 
+            deque.add(msg);
+
         }
 
     }
@@ -186,7 +208,10 @@ public class Application implements Callable<Integer>, LogReceiveListener {
 
 
     public static void main(String... args) {
-        int exitCode = new CommandLine(new Application()).execute(args);
+        Thread shutdownHook = new Thread(() -> keepRunning = false);
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+        int exitCode = new CommandLine(new Main()).execute(args);
         System.exit(exitCode);
     }
 

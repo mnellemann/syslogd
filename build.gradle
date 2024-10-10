@@ -17,6 +17,7 @@ dependencies {
     implementation 'info.picocli:picocli:4.7.6'
     implementation 'org.slf4j:slf4j-api:2.0.13'
     implementation 'org.slf4j:slf4j-simple:2.0.13'
+    implementation 'ro.pippo:pippo:1.14.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.4'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.4'
     implementation 'org.apache.commons:commons-collections4:4.4'
@@ -25,7 +26,7 @@ dependencies {
 }
 
 application {
-    getMainClass().set('biz.nellemann.syslogd.Application')
+    getMainClass().set('biz.nellemann.syslogd.Main')
 }
 
 java {

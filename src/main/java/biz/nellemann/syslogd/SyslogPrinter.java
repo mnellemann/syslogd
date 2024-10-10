@@ -59,6 +59,26 @@ public class SyslogPrinter {
     }
 
 
+    public static String toHtml(SyslogMessage msg) {
+        String colorClass;
+        if (msg.severity.toNumber() < 3) {
+            colorClass = "danger";
+        } else if (msg.severity.toNumber() < 5) {
+            colorClass = "warning";
+        } else {
+            colorClass = "success";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("<tr><td>%s</td>", msg.timestamp.toString()));
+        sb.append(String.format("<td class=\"has-text-%s\">%s.%s</td>", colorClass, msg.facility, msg.severity));
+        sb.append(String.format("<td class=\"has-text-link\">%s</td>", msg.hostname));
+        sb.append(String.format("<td class=\"has-text-info\">%s</td>", msg.application));
+        sb.append(String.format("<td>%s</td></tr>", msg.message));
+        return sb.toString();
+    }
+
+
     /**
      * Return a RFC-3164 formatted string of the SyslogMessage.
      * @param msg

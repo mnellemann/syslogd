@@ -32,26 +32,29 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
-public class TcpServer {
+public class TcpServer extends Thread {
 
     private final static Logger log = LoggerFactory.getLogger(TcpServer.class);
 
     private final int port;
     private ServerSocket serverSocket;
+    protected boolean listen = true;
 
     public TcpServer(int port) {
         this.port = port;
     }
 
-    public void start() throws IOException {
-        serverSocket = new ServerSocket(port);
-        while (true)
-            new ClientHandler(serverSocket.accept(), eventListeners).start();
+    @Override
+    public void run() {
+        try {
+            serverSocket = new ServerSocket(port);
+            while (listen)
+                new ClientHandler(serverSocket.accept(), eventListeners).start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void stop() throws IOException {
-        serverSocket.close();
-    }
 
 
     /**
