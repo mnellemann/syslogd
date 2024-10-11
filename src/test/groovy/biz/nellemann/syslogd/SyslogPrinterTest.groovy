@@ -46,7 +46,7 @@ class SyslogPrinterTest extends Specification {
         String output = SyslogPrinter.toLoki(msg)
 
         then:
-        output == '{ "streams": [ { "stream": { "hostname": "xps13", "facility": "user", "level": "notice", "application": "mark"}, "values": [ [ "1600845200000000000", "[user.notice] xps13 mark adfdfdf3432434565656 abcdefghijklmnopqrstuvwxyz" ] ] } ] }'
+        output == '{ "streams": [ { "stream": { "hostname": "xps13", "facility": "user", "level": "notice", "application": "mark"}, "values": [ [ "1600844250000000000", "[user.notice] xps13 mark adfdfdf3432434565656 abcdefghijklmnopqrstuvwxyz" ] ] } ] }'
     }
 
 }
