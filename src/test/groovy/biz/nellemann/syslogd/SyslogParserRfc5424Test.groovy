@@ -58,7 +58,7 @@ class SyslogParserRfc5424Test extends Specification {
         msg.structuredData == null
     }
 
-    void "test parseRfc5424Timestamp ex1"() {
+    void "test parseRfc5424Timestamp RFC ex1"() {
         setup:
         String dateString = "1985-04-12T23:20:50.52Z"
 
@@ -66,11 +66,11 @@ class SyslogParserRfc5424Test extends Specification {
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toEpochMilli() == 482196050052
-        inst.toString() == "1985-04-12T23:20:50.052Z"
+        inst.toEpochMilli() == 482196050520
+        inst.toString() == "1985-04-12T23:20:50.520Z"
     }
 
-    void "test parseRfc5424Timestamp ex2"() {
+    void "test parseRfc5424Timestamp RFC ex2"() {
         setup:
         String dateString = "1985-04-12T19:20:50.52-04:00"
 
@@ -78,11 +78,11 @@ class SyslogParserRfc5424Test extends Specification {
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toEpochMilli() == 482196050052
-        inst.toString() == "1985-04-12T23:20:50.052Z"
+        inst.toEpochMilli() == 482196050520
+        inst.toString() == "1985-04-12T23:20:50.520Z"
     }
 
-    void "test parseRfc5424Timestamp ex3"() {
+    void "test parseRfc5424Timestamp RFC ex3"() {
         setup:
         String dateString = "2003-10-11T22:14:15.003Z"
 
@@ -94,7 +94,7 @@ class SyslogParserRfc5424Test extends Specification {
         inst.toString() == "2003-10-11T22:14:15.003Z"
     }
 
-    void "test parseRfc5424Timestamp ex4"() {
+    void "test parseRfc5424Timestamp RFC ex4"() {
         setup:
         String dateString = "2003-08-24T05:14:15.000003-07:00"
 
@@ -102,21 +102,23 @@ class SyslogParserRfc5424Test extends Specification {
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toEpochMilli() == 1061727255003
-        inst.toString() == "2003-08-24T12:14:15.003Z"
+        inst.toEpochMilli() == 1061727255000
+        inst.toString() == "2003-08-24T12:14:15.000003Z"
     }
 
-    void "test parseRfc5424Timestamp ex5"() {
+
+    void "test parseRfc5424Timestamp test1"() {
         setup:
-        String dateString = "2003-08-24T05:14:15.000000003-07:00"
+        String dateString = "2024-10-11T08:20:55.020426+02:00"
 
         when:
         Instant inst = syslogParser.parseTimestamp(dateString)
 
         then:
-        inst.toEpochMilli() == 1061727255003
-        inst.toString() == "2003-08-24T12:14:15.003Z"
+        inst.toEpochMilli() == 1728627655020
+        inst.toString() == "2024-10-11T06:20:55.020426Z"
     }
+
 
 }
 

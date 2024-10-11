@@ -1,3 +1,5 @@
+import org.redline_rpm.header.Os
+
 plugins {
     id 'java'
     id 'groovy'
@@ -17,15 +19,15 @@ dependencies {
     implementation 'info.picocli:picocli:4.7.6'
     implementation 'org.slf4j:slf4j-api:2.0.13'
     implementation 'org.slf4j:slf4j-simple:2.0.13'
+    implementation 'ro.pippo:pippo:1.14.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.4'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.4'
     implementation 'org.apache.commons:commons-collections4:4.4'
-
     testImplementation 'org.spockframework:spock-core:2.3-groovy-4.0'
 }
 
 application {
-    getMainClass().set('biz.nellemann.syslogd.Application')
+    getMainClass().set('biz.nellemann.syslogd.Main')
 }
 
 java {
@@ -52,24 +54,62 @@ jacocoTestReport {
 test.finalizedBy jacocoTestReport
 
 jacocoTestCoverageVerification {
+
     violationRules {
         rule {
+            includes = ['biz.nellemann.syslogd.parser.*']
             limit {
                 counter = 'LINE'
-                minimum = 0.3
+                minimum = 0.8
             }
             limit {
                 counter = 'BRANCH'
-                minimum = 0.3
+                minimum = 0.8
             }
             limit {
                 counter = 'CLASS'
-                minimum = 0.4
+                minimum = 0.8
+            }
+        }
+        rule {
+            includes = ['biz.nellemann.syslogd.msg.*']
+            limit {
+                counter = 'LINE'
+                minimum = 0.8
+            }
+            limit {
+                counter = 'BRANCH'
+                minimum = 0.8
+            }
+            limit {
+                counter = 'CLASS'
+                minimum = 0.8
             }
         }
     }
 }
 check.dependsOn jacocoTestCoverageVerification
+
+jar {
+    manifest {
+        attributes(
+            'Created-By'     : "Gradle ${gradle.gradleVersion}",
+            'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
+            'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+            'Build-User'     : System.properties['user.name'],
+            'Build-Version'  : gitVersion(),
+            'Build-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ").toString(),
+        )
+    }
+}
+
+tasks.register("packages") {
+    group "build"
+    dependsOn ":build"
+    dependsOn ":buildDeb"
+    dependsOn ":buildRpm"
+}
+
 
 ospackage {
     packageName = 'syslogd'
@@ -97,31 +137,19 @@ ospackage {
 
 }
 
-buildRpm {
-    dependsOn startShadowScripts
-    os = "LINUX"
-}
-
 buildDeb {
     dependsOn startShadowScripts
+    installUtils file('scripts/utils.sh') as File
+    installUtils file('scripts/config.sh') as File
+    preUninstall file('scripts/deb-pre-rm.sh') as File
+    postInstall file('scripts/deb-post-inst.sh') as File
 }
 
-jar {
-    manifest {
-        attributes(
-            'Created-By'     : "Gradle ${gradle.gradleVersion}",
-            'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}",
-            'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
-            'Build-User'     : System.properties['user.name'],
-            'Build-Version'  : gitVersion(),
-            'Build-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZ").toString(),
-        )
-    }
-}
-
-tasks.register("packages") {
-    group "build"
-    dependsOn ":build"
-    dependsOn ":buildDeb"
-    dependsOn ":buildRpm"
+buildRpm {
+    dependsOn startShadowScripts
+    installUtils file('scripts/utils.sh') as File
+    installUtils file('scripts/config.sh') as File
+    preUninstall file('scripts/rpm-pre-rm.sh') as File
+    postTrans file('scripts/rpm-post-inst.sh') as File
+    os Os.LINUX
 }

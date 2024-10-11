@@ -10,9 +10,9 @@ import biz.nellemann.syslogd.msg.SyslogMessage;
 public class InputReader extends Thread {
 
     private final Scanner input;
-    private final String protocol;
+    private final InputProtocol protocol;
 
-    public InputReader(InputStream inputStream, String protocol) {
+    public InputReader(InputStream inputStream, InputProtocol protocol) {
         input = new Scanner(inputStream);
         this.protocol = protocol;
     }
@@ -31,9 +31,9 @@ public class InputReader extends Thread {
             }
 
             String payload;
-            if(protocol.equalsIgnoreCase("GELF"))
+            if(protocol == InputProtocol.GELF)
                 payload = SyslogPrinter.toGelf(msg);
-            else if (protocol.equalsIgnoreCase("RFC-5424")) {
+            else if (protocol == InputProtocol.RFC5424) {
                 payload = SyslogPrinter.toRfc5424(msg);
             } else {
                 payload = SyslogPrinter.toRfc3164(msg);

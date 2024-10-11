@@ -18,6 +18,9 @@ package biz.nellemann.syslogd.parser;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -102,30 +105,21 @@ public class SyslogParserRfc5424 extends SyslogParser {
     @Override
     public Instant parseTimestamp(String dateString) {
 
-        /*
-        https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
-
-        ex1: 1985-04-12T23:20:50.52Z
-        ex2: 1985-04-12T19:20:50.52-04:00
-        ex3: 2003-10-11T22:14:15.003Z
-        ex4: 2003-08-24T05:14:15.000003-07:00
-        ex5: 2003-08-24T05:14:15.000000003-07:00
-         */
-
         List<String> formatStrings = Arrays.asList(
-            //"yyyy-MM-dd'T'HH:mm:ss.SS'X'",
-            "yyyy-MM-dd'T'HH:mm:ss.SSX",
-            "yyyy-MM-dd'T'HH:mm:ss.SSSX",
-            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSX",
-            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSX"
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSZZZZZ",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSX"
         );
 
         for(String formatString : formatStrings)
         {
             try {
-                return new SimpleDateFormat(formatString).parse(dateString).toInstant();
+                //return new SimpleDateFormat(formatString).parse(dateString).toInstant();
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(formatString);
+                TemporalAccessor temporalAccessor = dateTimeFormatter.parse(dateString);
+                return Instant.from(temporalAccessor);
             }
-            catch (ParseException e) {
+            catch (DateTimeParseException e) {
                 log.debug("parseTimestamp() " + e.getMessage());
             }
         }

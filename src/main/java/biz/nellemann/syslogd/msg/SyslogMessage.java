@@ -20,10 +20,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.lang.reflect.Member;
 import java.time.Instant;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SyslogMessage {
+public class SyslogMessage implements Comparable<SyslogMessage> {
 
     @JsonIgnore
     public Facility facility = Facility.user;
@@ -70,6 +71,17 @@ public class SyslogMessage {
     public int length() {
         if(message == null) return 0;
         return message.length();
+    }
+
+    @Override
+    public int compareTo(SyslogMessage other) {
+        if(this.timestamp.isBefore(other.timestamp)) {
+            return -1;
+        }
+        if(this.timestamp.isAfter(other.timestamp)) {
+            return 1;
+        }
+        return 0;
     }
 
 

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,42 +31,50 @@ import biz.nellemann.syslogd.net.LokiClient;
 import biz.nellemann.syslogd.net.TcpServer;
 import biz.nellemann.syslogd.net.UdpClient;
 import biz.nellemann.syslogd.net.UdpServer;
+import biz.nellemann.syslogd.net.WebServer;
 import biz.nellemann.syslogd.parser.GelfParser;
 import biz.nellemann.syslogd.parser.SyslogParser;
 import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
 import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import ro.pippo.core.Pippo;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
+        showAtFileInUsageHelp = true,
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
-public class Application implements Callable<Integer>, LogReceiveListener {
+public class Main implements Callable<Integer>, LogReceiveListener {
 
     private final List<LogForwardListener> logForwardListeners = new ArrayList<>();
     private SyslogParser syslogParser;
+    private static boolean keepRunning = true;
+    private ArrayDeque<SyslogMessage> deque = new ArrayDeque<>(100);
 
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: 1514].", defaultValue = "1514", paramLabel = "<num>")
+    @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: ${DEFAULT-VALUE}].", defaultValue = "1514", paramLabel = "<num>")
     private int port;
 
-    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-web", negatable = true, description = "Start Web-UI [default: ${DEFAULT-VALUE}].", defaultValue = "true")
+    private boolean webServer;
+
+    @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean udpServer;
 
-    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean tcpServer;
 
-    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output in ANSI colors [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output in ANSI colors [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean ansiOutput;
 
-    @CommandLine.Option(names = "--no-stdout", negatable = true, description = "Output messages to stdout [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-stdout", negatable = true, description = "Output messages to stdout [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean stdout;
 
-    @CommandLine.Option(names = "--no-stdin", negatable = true, description = "Forward messages from stdin [default: true].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-stdin", negatable = true, description = "Forward messages from stdin [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean stdin;
 
-    @CommandLine.Option(names = {"-f", "--format"}, description = "Input format: RFC-5424, RFC-3164 or GELF [default: RFC-3164].", defaultValue = "RFC-3164")
-    private String protocol;
+    @CommandLine.Option(names = {"-f", "--format"}, description = "Input format: ${COMPLETION-CANDIDATES} [default: ${DEFAULT-VALUE}].", defaultValue = "RFC3164")
+    private InputProtocol protocol = InputProtocol.RFC3164;
 
     @CommandLine.Option(names = { "--to-syslog"}, description = "Forward to Syslog <udp://host:port> (RFC-5424).", paramLabel = "<uri>")
     private URI syslog;
@@ -76,20 +85,20 @@ public class Application implements Callable<Integer>, LogReceiveListener {
     @CommandLine.Option(names = { "--to-loki"}, description = "Forward to Grafana Loki <http://host:port>.", paramLabel = "<url>")
     private URL loki;
 
-    @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: 'false'].")
+    @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: ${DEFAULT-VALUE}].")
     private boolean enableDebug = false;
 
 
     @Override
-    public Integer call() throws IOException {
+    public Integer call() throws IOException, InterruptedException {
 
         if(enableDebug) {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         }
 
-        if(protocol.equalsIgnoreCase("GELF"))
+        if(protocol == InputProtocol.GELF)
             syslogParser = new GelfParser();
-        else if (protocol.equalsIgnoreCase("RFC-5424")) {
+        else if (protocol == InputProtocol.RFC5424) {
             syslogParser = new SyslogParserRfc5424();
         } else {
             syslogParser = new SyslogParserRfc3164();
@@ -138,6 +147,18 @@ public class Application implements Callable<Integer>, LogReceiveListener {
             tcpServer.start();
         }
 
+        if(webServer) {
+            WebServer pippoApp = new WebServer();
+            pippoApp.setDeque(deque);
+            Pippo pippo = new Pippo(pippoApp);
+            pippo.addPublicResourceRoute();
+            pippo.start();
+        }
+
+        while(keepRunning) {
+            Thread.sleep(1000);
+        }
+
         return 0;
     }
 
@@ -167,6 +188,8 @@ public class Application implements Callable<Integer>, LogReceiveListener {
                 }
             }
 
+            deque.add(msg);
+
         }
 
     }
@@ -186,7 +209,10 @@ public class Application implements Callable<Integer>, LogReceiveListener {
 
 
     public static void main(String... args) {
-        int exitCode = new CommandLine(new Application()).execute(args);
+        Thread shutdownHook = new Thread(() -> keepRunning = false);
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+        int exitCode = new CommandLine(new Main()).execute(args);
         System.exit(exitCode);
     }
 

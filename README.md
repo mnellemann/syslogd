@@ -1,4 +1,7 @@
-# Syslog Director
+Syslog Director
+---------------
+
+Web interface on port 8383 where logs processed can be monitored live, but are not persisted.
 
 All received messages are written to *stdout* and/or forwarded to one or more remote logging destinations.
 
@@ -11,6 +14,7 @@ Supported remote logging destinations are:
 - Syslog (RFC5424 over UDP)
 - Graylog (GELF over UDP)
 - Grafana Loki (HTTP over TCP).
+
 
 This software is free to use and is licensed under the [Apache 2.0 License](LICENSE).
 
@@ -31,8 +35,8 @@ Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdin] [--[no-]stdout] [--[no-]tcp]
                [--[no-]udp] [-f=<protocol>] [-p=<num>] [--to-gelf=<uri>]
                [--to-loki=<url>] [--to-syslog=<uri>]
   -d, --debug               Enable debugging [default: 'false'].
-  -f, --format=<protocol>   Input format: RFC-5424, RFC-3164 or GELF [default:
-                              RFC-3164].
+  -f, --format=<protocol>   Input format: RFC5424, RFC3164 or GELF [default:
+                              RFC3164].
   -h, --help                Show this help message and exit.
       --[no-]ansi           Output in ANSI colors [default: true].
       --[no-]stdin          Forward messages from stdin [default: true].
@@ -82,6 +86,18 @@ Forwarding to a Grafana Loki server.
 
 ```shell
 /opt/syslogd/bin/syslogd --to-loki http://remotehost:3100
+```
+
+Receive log messages sent with the GELF protocol:
+
+```shell
+/opt/syslogd/bin/syslogd --port 12201 --format GELF
+```
+
+Receive log messages sent with the GELF protocol and forward to remote syslog server:
+
+```shell
+/opt/syslogd/bin/syslogd --port 12201 --format GELF --to-syslog udp://remotehost:1514
 ```
 
 Started from a tmux session, listening for syslog messages and forwarding to a remote Graylog server:
