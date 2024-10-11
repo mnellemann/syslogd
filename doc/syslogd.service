@@ -4,8 +4,8 @@ Description=Syslog Director
 [Service]
 TimeoutStartSec=0
 Restart=always
-ExecStart=/opt/syslogd/bin/syslogd --port 514 --format RFC-3164 --no-ansi
-#ExecStart=/opt/syslogd/bin/syslogd --port 514 --format RFC-5424 --no-ansi
+ExecStart=/opt/syslogd/bin/syslogd --port 514 --format RFC3164 --no-ansi
+#ExecStart=/opt/syslogd/bin/syslogd --port 514 --format RFC5424 --no-ansi
 #ExecStart=/opt/syslogd/bin/syslogd --port 12201 --format GELF --no-ansi
 
 [Install]
