@@ -36,6 +36,7 @@ import biz.nellemann.syslogd.parser.GelfParser;
 import biz.nellemann.syslogd.parser.SyslogParser;
 import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
 import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import ro.pippo.core.Pippo;
@@ -49,7 +50,7 @@ public class Main implements Callable<Integer>, LogReceiveListener {
     private final List<LogForwardListener> logForwardListeners = new ArrayList<>();
     private SyslogParser syslogParser;
     private static boolean keepRunning = true;
-    private ArrayDeque<SyslogMessage> deque = new ArrayDeque<>(100);
+    private CircularFifoQueue<SyslogMessage> queue = new CircularFifoQueue<>(50);
 
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: ${DEFAULT-VALUE}].", defaultValue = "1514", paramLabel = "<num>")
@@ -149,7 +150,9 @@ public class Main implements Callable<Integer>, LogReceiveListener {
 
         if(webServer) {
             WebServer pippoApp = new WebServer();
-            pippoApp.setDeque(deque);
+            pippoApp.setQueue(queue);
+            logForwardListeners.add(pippoApp.getLogSocketHandler());
+
             Pippo pippo = new Pippo(pippoApp);
             pippo.addPublicResourceRoute();
             pippo.start();
@@ -188,7 +191,7 @@ public class Main implements Callable<Integer>, LogReceiveListener {
                 }
             }
 
-            deque.add(msg);
+            queue.add(msg);
 
         }
 

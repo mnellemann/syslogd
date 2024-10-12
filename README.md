@@ -141,4 +141,10 @@ docker run --rm -d --name=loki -p 3100:3100 grafana/loki
 docker run --rm -d --name=grafana --link loki:loki -p 3000:3000 grafana/grafana:7.1.3
 ```
 
+### Testing
+
+```shell
+while true; do sleep 10; logger -n localhost -P 1514 --rfc3164 test $(date); done
+```
+
 </details>
