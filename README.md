@@ -32,10 +32,10 @@ Some of my other related projects are:
 
 ```text
 Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdin] [--[no-]stdout] [--[no-]tcp]
-               [--[no-]udp] [-f=<protocol>] [-p=<num>] [--to-gelf=<uri>]
-               [--to-loki=<url>] [--to-syslog=<uri>]
-  -d, --debug               Enable debugging [default: 'false'].
-  -f, --format=<protocol>   Input format: RFC5424, RFC3164 or GELF [default:
+               [--[no-]udp] [--[no-]web] [-f=<protocol>] [-p=<num>]
+               [--to-gelf=<uri>] [--to-loki=<url>] [--to-syslog=<uri>]
+  -d, --debug               Enable debugging [default: false].
+  -f, --format=<protocol>   Input format: RFC3164, RFC5424, GELF [default:
                               RFC3164].
   -h, --help                Show this help message and exit.
       --[no-]ansi           Output in ANSI colors [default: true].
@@ -43,6 +43,7 @@ Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdin] [--[no-]stdout] [--[no-]tcp]
       --[no-]stdout         Output messages to stdout [default: true].
       --[no-]tcp            Listen on TCP [default: true].
       --[no-]udp            Listen on UDP [default: true].
+      --[no-]web            Start Web-UI on port 8514 [default: true].
   -p, --port=<num>          Listening port [default: 1514].
       --to-gelf=<uri>       Forward to Graylog <udp://host:port>.
       --to-loki=<url>       Forward to Grafana Loki <http://host:port>.

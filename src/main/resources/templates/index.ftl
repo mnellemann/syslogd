@@ -21,6 +21,7 @@
             </div>
         </section>
 
+
         <section class="section">
             <table class="table is-fullwidth is-striped" hx-ext="ws" ws-connect="/ws/log">
                 <tbody id="content">

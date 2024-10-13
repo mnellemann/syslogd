@@ -68,7 +68,7 @@ public class LogSocketHandler implements WebSocketHandler, LogForwardListener {
             try {
                 webSocketContext.sendMessage(msg);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.error("onForwardEvent() - error: {}", e.getMessage());
             }
         });
     }

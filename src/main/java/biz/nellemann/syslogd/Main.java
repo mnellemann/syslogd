@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -36,27 +35,24 @@ import biz.nellemann.syslogd.parser.GelfParser;
 import biz.nellemann.syslogd.parser.SyslogParser;
 import biz.nellemann.syslogd.parser.SyslogParserRfc3164;
 import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import ro.pippo.core.Pippo;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
-        showAtFileInUsageHelp = true,
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Main implements Callable<Integer>, LogReceiveListener {
 
     private final List<LogForwardListener> logForwardListeners = new ArrayList<>();
     private SyslogParser syslogParser;
     private static boolean keepRunning = true;
-    private CircularFifoQueue<SyslogMessage> queue = new CircularFifoQueue<>(50);
 
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: ${DEFAULT-VALUE}].", defaultValue = "1514", paramLabel = "<num>")
     private int port;
 
-    @CommandLine.Option(names = "--no-web", negatable = true, description = "Start Web-UI [default: ${DEFAULT-VALUE}].", defaultValue = "true")
+    @CommandLine.Option(names = "--no-web", negatable = true, description = "Start Web-UI on port 8514 [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean webServer;
 
     @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: ${DEFAULT-VALUE}].", defaultValue = "true")
@@ -150,7 +146,6 @@ public class Main implements Callable<Integer>, LogReceiveListener {
 
         if(webServer) {
             WebServer pippoApp = new WebServer();
-            pippoApp.setQueue(queue);
             logForwardListeners.add(pippoApp.getLogSocketHandler());
 
             Pippo pippo = new Pippo(pippoApp);
@@ -190,8 +185,6 @@ public class Main implements Callable<Integer>, LogReceiveListener {
                     System.out.println(SyslogPrinter.toString(msg));
                 }
             }
-
-            queue.add(msg);
 
         }
 
