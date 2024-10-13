@@ -1,9 +1,12 @@
-Syslog Director
----------------
+Log Director
+------------
 
-Web interface on port 8383 where logs processed can be monitored live, but are not persisted.
+This software is free to use and is licensed under the [Apache 2.0 License](LICENSE).
 
-All received messages are written to *stdout* and/or forwarded to one or more remote logging destinations.
+Features:
+- Received messages are written to *stdout* and/or forwarded to one or more remote logging destinations
+- Log messages are not stored, but can be piped from stdout to local files or through the systemd journal
+- Simple web interface where logs can be monitored live
 
 Supported incoming message formats are:
 - Syslog RFC5424 - TCP and UDP
@@ -15,8 +18,6 @@ Supported remote logging destinations are:
 - Graylog (GELF over UDP)
 - Grafana Loki (HTTP over TCP).
 
-
-This software is free to use and is licensed under the [Apache 2.0 License](LICENSE).
 
 ![architecture](doc/syslogd.png)
 
