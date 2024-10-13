@@ -31,24 +31,27 @@ Some of my other related projects are:
 - Install the syslogd package (*.deb* or *.rpm*) from [releases](https://github.com/mnellemann/syslogd/releases) or build from source.
 
 ```text
-Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdin] [--[no-]stdout] [--[no-]tcp]
-               [--[no-]udp] [--[no-]web] [-f=<protocol>] [-p=<num>]
+Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]monitor] [--[no-]stdin] [--[no-]
+               stdout] [--[no-]tcp] [--[no-]udp] [-f=<proto>]
+               [--monitor-path=<path>] [--monitor-port=<num>] [-p=<num>]
                [--to-gelf=<uri>] [--to-loki=<url>] [--to-syslog=<uri>]
-  -d, --debug               Enable debugging [default: false].
-  -f, --format=<protocol>   Input format: RFC3164, RFC5424, GELF [default:
-                              RFC3164].
-  -h, --help                Show this help message and exit.
-      --[no-]ansi           Output in ANSI colors [default: true].
-      --[no-]stdin          Forward messages from stdin [default: true].
-      --[no-]stdout         Output messages to stdout [default: true].
-      --[no-]tcp            Listen on TCP [default: true].
-      --[no-]udp            Listen on UDP [default: true].
-      --[no-]web            Start Web-UI on port 8514 [default: true].
-  -p, --port=<num>          Listening port [default: 1514].
-      --to-gelf=<uri>       Forward to Graylog <udp://host:port>.
-      --to-loki=<url>       Forward to Grafana Loki <http://host:port>.
-      --to-syslog=<uri>     Forward to Syslog <udp://host:port> (RFC-5424).
-  -V, --version             Print version information and exit.
+  -d, --debug                Enable debugging [default: false].
+  -f, --format=<proto>       Input format: RFC3164, RFC5424, GELF [default:
+                               RFC3164].
+  -h, --help                 Show this help message and exit.
+      --monitor-path=<path>  Monitor context path [default: /].
+      --monitor-port=<num>   Monitor listening port [default: 8514].
+      --[no-]ansi            Output in ANSI colors [default: true].
+      --[no-]monitor         Start Monitor UI on port 8514 [default: true].
+      --[no-]stdin           Forward messages from stdin [default: true].
+      --[no-]stdout          Output messages to stdout [default: true].
+      --[no-]tcp             Listen on TCP [default: true].
+      --[no-]udp             Listen on UDP [default: true].
+  -p, --port=<num>           Listening port [default: 1514].
+      --to-gelf=<uri>        Forward to Graylog <udp://host:port>.
+      --to-loki=<url>        Forward to Grafana Loki <http://host:port>.
+      --to-syslog=<uri>      Forward to Syslog <udp://host:port> (RFC-5424).
+  -V, --version              Print version information and exit.
 ```
 
 The default syslog port (514) requires you to run syslogd as root / administrator.

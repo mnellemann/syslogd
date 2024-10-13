@@ -39,7 +39,7 @@ public class LogSocketHandler implements WebSocketHandler, LogForwardListener {
     public void onOpen(WebSocketContext webSocketContext) {
         log.debug("onOpen()");
         webSocketContextList.add(webSocketContext);
-            }
+    }
 
     @Override
     public void onClose(WebSocketContext webSocketContext, int closeCode, String message) {

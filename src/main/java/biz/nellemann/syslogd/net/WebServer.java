@@ -3,6 +3,7 @@ package biz.nellemann.syslogd.net;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.pippo.core.Application;
+import ro.pippo.core.PippoSettings;
 
 public class WebServer extends Application {
 
@@ -13,6 +14,9 @@ public class WebServer extends Application {
         return logSocketHandler;
     }
 
+    public WebServer(PippoSettings settings) {
+        super((settings));
+    }
 
     @Override
     protected void onInit() {

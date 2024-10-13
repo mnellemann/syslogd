@@ -23,7 +23,7 @@
 
 
         <section class="section">
-            <table class="table is-fullwidth is-striped" hx-ext="ws" ws-connect="/ws/log">
+            <table class="table is-fullwidth is-striped" hx-ext="ws" ws-connect="ws/log">
                 <tbody id="content">
                 </tbody>
             </table>
