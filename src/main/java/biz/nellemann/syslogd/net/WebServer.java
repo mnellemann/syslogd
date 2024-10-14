@@ -1,18 +1,21 @@
 package biz.nellemann.syslogd.net;
 
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.pippo.core.Application;
-import biz.nellemann.syslogd.SyslogPrinter;
-import biz.nellemann.syslogd.msg.SyslogMessage;
+import ro.pippo.core.PippoSettings;
 
 public class WebServer extends Application {
 
-    ArrayDeque<SyslogMessage> deque;
+    private final static Logger log = LoggerFactory.getLogger(WebServer.class);
+    private final LogSocketHandler logSocketHandler = new LogSocketHandler();
 
-    public void setDeque(ArrayDeque<SyslogMessage> d) {
-        deque = d;
+    public LogSocketHandler getLogSocketHandler() {
+        return logSocketHandler;
+    }
+
+    public WebServer(PippoSettings settings) {
+        super((settings));
     }
 
     @Override
@@ -22,10 +25,14 @@ public class WebServer extends Application {
 
         GET("/ping", routeContext -> routeContext.send("pong"));
 
+        /*
         GET("/log", routeContext -> routeContext.text().negotiateContentType().send(
-            deque.stream().sorted(Collections.reverseOrder()).map(SyslogPrinter::toHtml).collect(Collectors.joining())
-        ));
+            queue.stream().sorted(Collections.reverseOrder()).map(SyslogPrinter::toHtml).collect(Collectors.joining())
+        ));*/
+
+        addWebSocket("/ws/log", logSocketHandler);
 
     }
+
 
 }

@@ -70,7 +70,7 @@ public class SyslogPrinter {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("<tr><td>%s</td>", msg.timestamp));
+        sb.append(String.format("<tr><td>%s</td>", msg.timestamp))   ;
         sb.append(String.format("<td class=\"has-text-%s\">%s.%s</td>", colorClass, msg.facility, msg.severity));
         sb.append(String.format("<td class=\"has-text-link\">%s</td>", msg.hostname));
         sb.append(String.format("<td class=\"has-text-info\">%s</td>", msg.application));

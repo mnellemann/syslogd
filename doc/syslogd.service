@@ -6,7 +6,7 @@ TimeoutStartSec=0
 Restart=always
 ExecStart=/opt/syslogd/bin/syslogd --port 514 --format RFC3164 --no-ansi
 #ExecStart=/opt/syslogd/bin/syslogd --port 514 --format RFC5424 --no-ansi
-#ExecStart=/opt/syslogd/bin/syslogd --port 12201 --format GELF --no-ansi
+#ExecStart=/opt/syslogd/bin/syslogd --port 12201 --format GELF --no-ansi --monitor-path=/logd
 
 [Install]
 WantedBy=default.target

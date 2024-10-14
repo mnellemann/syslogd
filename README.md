@@ -1,9 +1,12 @@
-Syslog Director
----------------
+Log Director
+------------
 
-Web interface on port 8383 where logs processed can be monitored live, but are not persisted.
+This software is free to use and is licensed under the [Apache 2.0 License](LICENSE).
 
-All received messages are written to *stdout* and/or forwarded to one or more remote logging destinations.
+Features:
+- Received messages are written to *stdout* and/or forwarded to one or more remote logging destinations
+- Log messages are not stored, but can be piped from stdout to local files or through the systemd journal
+- Simple web interface where logs can be monitored live
 
 Supported incoming message formats are:
 - Syslog RFC5424 - TCP and UDP
@@ -15,8 +18,6 @@ Supported remote logging destinations are:
 - Graylog (GELF over UDP)
 - Grafana Loki (HTTP over TCP).
 
-
-This software is free to use and is licensed under the [Apache 2.0 License](LICENSE).
 
 ![architecture](doc/syslogd.png)
 
@@ -31,23 +32,27 @@ Some of my other related projects are:
 - Install the syslogd package (*.deb* or *.rpm*) from [releases](https://github.com/mnellemann/syslogd/releases) or build from source.
 
 ```text
-Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]stdin] [--[no-]stdout] [--[no-]tcp]
-               [--[no-]udp] [-f=<protocol>] [-p=<num>] [--to-gelf=<uri>]
-               [--to-loki=<url>] [--to-syslog=<uri>]
-  -d, --debug               Enable debugging [default: 'false'].
-  -f, --format=<protocol>   Input format: RFC5424, RFC3164 or GELF [default:
-                              RFC3164].
-  -h, --help                Show this help message and exit.
-      --[no-]ansi           Output in ANSI colors [default: true].
-      --[no-]stdin          Forward messages from stdin [default: true].
-      --[no-]stdout         Output messages to stdout [default: true].
-      --[no-]tcp            Listen on TCP [default: true].
-      --[no-]udp            Listen on UDP [default: true].
-  -p, --port=<num>          Listening port [default: 1514].
-      --to-gelf=<uri>       Forward to Graylog <udp://host:port>.
-      --to-loki=<url>       Forward to Grafana Loki <http://host:port>.
-      --to-syslog=<uri>     Forward to Syslog <udp://host:port> (RFC-5424).
-  -V, --version             Print version information and exit.
+Usage: syslogd [-dhV] [--[no-]ansi] [--[no-]monitor] [--[no-]stdin] [--[no-]
+               stdout] [--[no-]tcp] [--[no-]udp] [-f=<proto>]
+               [--monitor-path=<path>] [--monitor-port=<num>] [-p=<num>]
+               [--to-gelf=<uri>] [--to-loki=<url>] [--to-syslog=<uri>]
+  -d, --debug                Enable debugging [default: false].
+  -f, --format=<proto>       Input format: RFC3164, RFC5424, GELF [default:
+                               RFC3164].
+  -h, --help                 Show this help message and exit.
+      --monitor-path=<path>  Monitor context path [default: /].
+      --monitor-port=<num>   Monitor listening port [default: 8514].
+      --[no-]ansi            Output in ANSI colors [default: true].
+      --[no-]monitor         Start Monitor UI on port 8514 [default: true].
+      --[no-]stdin           Forward messages from stdin [default: true].
+      --[no-]stdout          Output messages to stdout [default: true].
+      --[no-]tcp             Listen on TCP [default: true].
+      --[no-]udp             Listen on UDP [default: true].
+  -p, --port=<num>           Listening port [default: 1514].
+      --to-gelf=<uri>        Forward to Graylog <udp://host:port>.
+      --to-loki=<url>        Forward to Grafana Loki <http://host:port>.
+      --to-syslog=<uri>      Forward to Syslog <udp://host:port> (RFC-5424).
+  -V, --version              Print version information and exit.
 ```
 
 The default syslog port (514) requires you to run syslogd as root / administrator.
@@ -139,6 +144,12 @@ Run Loki and Grafana in local containers to test.
 ```shell
 docker run --rm -d --name=loki -p 3100:3100 grafana/loki
 docker run --rm -d --name=grafana --link loki:loki -p 3000:3000 grafana/grafana:7.1.3
+```
+
+### Testing
+
+```shell
+while true; do sleep 10; logger -n localhost -P 1514 --rfc3164 test $(date); done
 ```
 
 </details>

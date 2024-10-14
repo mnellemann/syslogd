@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -39,30 +38,39 @@ import biz.nellemann.syslogd.parser.SyslogParserRfc5424;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import ro.pippo.core.Pippo;
+import ro.pippo.core.PippoSettings;
+import ro.pippo.core.RuntimeMode;
 
 @Command(name = "syslogd",
         mixinStandardHelpOptions = true,
-        showAtFileInUsageHelp = true,
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Main implements Callable<Integer>, LogReceiveListener {
 
     private final List<LogForwardListener> logForwardListeners = new ArrayList<>();
     private SyslogParser syslogParser;
     private static boolean keepRunning = true;
-    private ArrayDeque<SyslogMessage> deque = new ArrayDeque<>(100);
 
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: ${DEFAULT-VALUE}].", defaultValue = "1514", paramLabel = "<num>")
     private int port;
 
-    @CommandLine.Option(names = "--no-web", negatable = true, description = "Start Web-UI [default: ${DEFAULT-VALUE}].", defaultValue = "true")
-    private boolean webServer;
+
+    @CommandLine.Option(names = "--no-monitor", negatable = true, description = "Start Monitor UI on port 8514 [default: ${DEFAULT-VALUE}].", defaultValue = "true")
+    private boolean monitor;
+
+    @CommandLine.Option(names = "--monitor-port", description = "Monitor listening port [default: ${DEFAULT-VALUE}].", defaultValue = "8514", paramLabel = "<num>")
+    private int monitorPort;
+
+    @CommandLine.Option(names = "--monitor-path", description = "Monitor context path [default: ${DEFAULT-VALUE}].", defaultValue = "/", paramLabel = "<path>")
+    private String monitorPath;
+
 
     @CommandLine.Option(names = "--no-udp", negatable = true, description = "Listen on UDP [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean udpServer;
 
     @CommandLine.Option(names = "--no-tcp", negatable = true, description = "Listen on TCP [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean tcpServer;
+
 
     @CommandLine.Option(names = "--no-ansi", negatable = true, description = "Output in ANSI colors [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean ansiOutput;
@@ -73,7 +81,8 @@ public class Main implements Callable<Integer>, LogReceiveListener {
     @CommandLine.Option(names = "--no-stdin", negatable = true, description = "Forward messages from stdin [default: ${DEFAULT-VALUE}].", defaultValue = "true")
     private boolean stdin;
 
-    @CommandLine.Option(names = {"-f", "--format"}, description = "Input format: ${COMPLETION-CANDIDATES} [default: ${DEFAULT-VALUE}].", defaultValue = "RFC3164")
+
+    @CommandLine.Option(names = {"-f", "--format"}, description = "Input format: ${COMPLETION-CANDIDATES} [default: ${DEFAULT-VALUE}].", defaultValue = "RFC3164", paramLabel = "<proto>")
     private InputProtocol protocol = InputProtocol.RFC3164;
 
     @CommandLine.Option(names = { "--to-syslog"}, description = "Forward to Syslog <udp://host:port> (RFC-5424).", paramLabel = "<uri>")
@@ -84,6 +93,7 @@ public class Main implements Callable<Integer>, LogReceiveListener {
 
     @CommandLine.Option(names = { "--to-loki"}, description = "Forward to Grafana Loki <http://host:port>.", paramLabel = "<url>")
     private URL loki;
+
 
     @CommandLine.Option(names = { "-d", "--debug" }, description = "Enable debugging [default: ${DEFAULT-VALUE}].")
     private boolean enableDebug = false;
@@ -147,9 +157,13 @@ public class Main implements Callable<Integer>, LogReceiveListener {
             tcpServer.start();
         }
 
-        if(webServer) {
-            WebServer pippoApp = new WebServer();
-            pippoApp.setDeque(deque);
+        if(monitor) {
+            PippoSettings settings = new PippoSettings(RuntimeMode.PROD);
+            settings.overrideSetting("server.port", monitorPort);
+            settings.overrideSetting("server.contextPath", monitorPath);
+            WebServer pippoApp = new WebServer(settings);
+            logForwardListeners.add(pippoApp.getLogSocketHandler());
+
             Pippo pippo = new Pippo(pippoApp);
             pippo.addPublicResourceRoute();
             pippo.start();
@@ -187,8 +201,6 @@ public class Main implements Callable<Integer>, LogReceiveListener {
                     System.out.println(SyslogPrinter.toString(msg));
                 }
             }
-
-            deque.add(msg);
 
         }
 
