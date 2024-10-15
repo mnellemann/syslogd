@@ -51,7 +51,6 @@ public class Main implements Callable<Integer>, LogReceiveListener {
     private CircularFifoQueue<SyslogMessage>    queue = new CircularFifoQueue<>(500);
     private final List<LogForwardListener> logForwardListeners = new ArrayList<>();
     private SyslogParser syslogParser;
-    private static boolean keepRunning = true;
 
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "Listening port [default: ${DEFAULT-VALUE}].", defaultValue = "1514", paramLabel = "<num>")
@@ -172,11 +171,7 @@ public class Main implements Callable<Integer>, LogReceiveListener {
             pippo.start();
         }
 
-        while(keepRunning) {
-            //noinspection BusyWait
-            Thread.sleep(1000);
-        }
-
+        Thread.currentThread().join(); // sleep forever
         return 0;
     }
 
