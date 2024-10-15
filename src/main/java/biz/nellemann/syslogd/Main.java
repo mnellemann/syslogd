@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.collections4.queue.CircularFifoQueue;
+
 import biz.nellemann.syslogd.msg.SyslogMessage;
 import biz.nellemann.syslogd.net.GelfClient;
 import biz.nellemann.syslogd.net.LokiClient;
@@ -46,6 +48,7 @@ import ro.pippo.core.RuntimeMode;
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Main implements Callable<Integer>, LogReceiveListener {
 
+    private CircularFifoQueue<SyslogMessage> queue = new CircularFifoQueue<>(500);
     private final List<LogForwardListener> logForwardListeners = new ArrayList<>();
     private SyslogParser syslogParser;
     private static boolean keepRunning = true;
@@ -161,7 +164,7 @@ public class Main implements Callable<Integer>, LogReceiveListener {
             PippoSettings settings = new PippoSettings(RuntimeMode.PROD);
             settings.overrideSetting("server.port", monitorPort);
             settings.overrideSetting("server.contextPath", monitorPath);
-            WebServer pippoApp = new WebServer(settings);
+            WebServer pippoApp = new WebServer(settings, queue);
             logForwardListeners.add(pippoApp.getLogSocketHandler());
 
             Pippo pippo = new Pippo(pippoApp);
@@ -170,6 +173,7 @@ public class Main implements Callable<Integer>, LogReceiveListener {
         }
 
         while(keepRunning) {
+            //noinspection BusyWait
             Thread.sleep(1000);
         }
 
@@ -192,6 +196,7 @@ public class Main implements Callable<Integer>, LogReceiveListener {
 
             if(!logForwardListeners.isEmpty()) {
                 sendForwardEvent(msg);
+                queue.add(msg);
             }
 
             if(stdout) {

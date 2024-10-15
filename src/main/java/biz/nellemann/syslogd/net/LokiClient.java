@@ -66,12 +66,12 @@ public class LokiClient implements LogForwardListener, Runnable {
             int responseCode = con.getResponseCode();
             try (InputStream ignored = con.getInputStream()) {
                 if(responseCode != 204) {
-                    log.warn("send() - response: " + responseCode);
+                    log.warn("send() - response: {}", responseCode);
                 }
             }
 
         } catch (IOException e) {
-            log.error("send() - error: " + e.getMessage());
+            log.error("send() - error: {}", e.getMessage());
         } finally {
             if(con != null) {
                 con.disconnect();

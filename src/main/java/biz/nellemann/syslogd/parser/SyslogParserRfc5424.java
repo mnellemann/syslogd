@@ -15,8 +15,6 @@
  */
 package biz.nellemann.syslogd.parser;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -49,12 +47,12 @@ public class SyslogParserRfc5424 extends SyslogParser {
     @Override
     public SyslogMessage parse(final String input) throws NumberFormatException {
 
-        log.debug("parseRfc5424() " + input);
+        log.debug("parseRfc5424() {}", input);
 
         Matcher matcher = pattern.matcher(input);
         boolean matchFound = matcher.find();
         if(!matchFound) {
-            log.debug("parseRfc5424() - Match not found in: " + input);
+            log.debug("parseRfc5424() - Match not found in: {}", input);
             System.err.println("!" + input);
             return null;
         }
@@ -120,11 +118,11 @@ public class SyslogParserRfc5424 extends SyslogParser {
                 return Instant.from(temporalAccessor);
             }
             catch (DateTimeParseException e) {
-                log.debug("parseTimestamp() " + e.getMessage());
+                log.debug("parseTimestamp() {}", e.getMessage());
             }
         }
 
-        log.warn("parseTimestamp() - Could not parse timestamp: " + dateString);
+        log.warn("parseTimestamp() - Could not parse timestamp: {}", dateString);
         return Instant.now();
     }
 

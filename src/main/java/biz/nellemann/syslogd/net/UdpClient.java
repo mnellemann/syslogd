@@ -43,7 +43,7 @@ public class UdpClient implements LogForwardListener {
         try {
             socket.send(packet);
         } catch (IOException e) {
-            log.error("send() - Could not send packet: " + e.getMessage());
+            log.error("send() - Could not send packet: {}", e.getMessage());
         }
     }
 

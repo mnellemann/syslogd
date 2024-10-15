@@ -47,7 +47,7 @@ public class SyslogParserRfc3164 extends SyslogParser {
     @Override
     public SyslogMessage parse(final String input) throws NumberFormatException {
 
-        log.debug("parseRfc3164() " + input);
+        log.debug("parseRfc3164() {}", input);
 
         Matcher matcher = pattern.matcher(input);
         if(!matcher.find()) {
@@ -105,7 +105,7 @@ public class SyslogParserRfc3164 extends SyslogParser {
             log.debug("parseTimestamp()", e);
         }
 
-        log.warn("parseTimestamp() - Could not parse timestamp: " + dateString);
+        log.warn("parseTimestamp() - Could not parse timestamp: {}", dateString);
         return Instant.now();
     }
 

@@ -37,17 +37,16 @@ public class TcpServer extends Thread {
     private final static Logger log = LoggerFactory.getLogger(TcpServer.class);
 
     private final int port;
-    private ServerSocket serverSocket;
     protected boolean listen = true;
 
     public TcpServer(int port) {
         this.port = port;
     }
 
+
     @Override
     public void run() {
-        try {
-            serverSocket = new ServerSocket(port);
+        try(ServerSocket serverSocket = new ServerSocket(port)) {
             while (listen)
                 new ClientHandler(serverSocket.accept(), eventListeners).start();
         } catch (IOException e) {

@@ -22,18 +22,14 @@ public class LogSocketHandler implements WebSocketHandler, LogForwardListener {
     @Override
     public void onMessage(WebSocketContext webSocketContext, String message) {
         log.debug("onMessage() - {}", message);
-        try {
-            webSocketContext.sendMessage(message);
-        } catch (IOException e) {
-            log.warn("onMessage() - {}", message);
-        }
     }
+
 
     @Override
     public void onMessage(WebSocketContext webSocketContext, byte[] message) {
         log.debug("onMessage()");
-        System.out.println("TestWebSocket.onMessage");
     }
+
 
     @Override
     public void onOpen(WebSocketContext webSocketContext) {
@@ -41,17 +37,20 @@ public class LogSocketHandler implements WebSocketHandler, LogForwardListener {
         webSocketContextList.add(webSocketContext);
     }
 
+
     @Override
     public void onClose(WebSocketContext webSocketContext, int closeCode, String message) {
         log.debug("onClose()");
         webSocketContextList.remove(webSocketContext);
     }
 
+
     @Override
     public void onTimeout(WebSocketContext webSocketContext) {
         log.debug("onTimeout()");
         webSocketContextList.remove(webSocketContext);
     }
+
 
     @Override
     public void onError(WebSocketContext webSocketContext, Throwable t) {
