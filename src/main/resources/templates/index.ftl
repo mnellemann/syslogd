@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <title>Log Director - Monitor</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="${publicAt('css/bulma.min.css')}" rel="stylesheet">
@@ -25,6 +26,8 @@
         <section class="section">
             <table class="table is-fullwidth is-striped" hx-ext="ws" ws-connect="ws/log">
                 <tbody id="content">
+                </tbody>
+                <tbody id="history" hx-get="log" hx-trigger="load">
                 </tbody>
             </table>
         </section>

@@ -48,7 +48,7 @@ import ro.pippo.core.RuntimeMode;
         versionProvider = biz.nellemann.syslogd.VersionProvider.class)
 public class Main implements Callable<Integer>, LogReceiveListener {
 
-    private CircularFifoQueue<SyslogMessage> queue = new CircularFifoQueue<>(500);
+    private CircularFifoQueue<SyslogMessage>    queue = new CircularFifoQueue<>(500);
     private final List<LogForwardListener> logForwardListeners = new ArrayList<>();
     private SyslogParser syslogParser;
     private static boolean keepRunning = true;
